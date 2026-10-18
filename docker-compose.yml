@@ -1,0 +1,17 @@
+# Local Postgres for development: `docker compose up -d`.
+# Production uses a hosted database (Neon) through DATABASE_URL on Vercel.
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: veloura
+      POSTGRES_PASSWORD: veloura
+      POSTGRES_DB: veloura
+    ports:
+      - "5432:5432"
+    volumes:
+      - veloura-db:/var/lib/postgresql/data
+
+volumes:
+  veloura-db:

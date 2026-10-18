@@ -1,0 +1,89 @@
+// The store's database. Change it here, then create a migration:
+//   npx prisma migrate dev --name <what-changed>
+// Money is stored in whole cents (Int), never as decimals.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Category {
+  Makeup
+  Skincare
+  Fragrance
+  Hair
+  Sets
+}
+
+model Brand {
+  id       Int       @id @default(autoincrement())
+  slug     String    @unique
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  /// Kept from the catalogue files: bags saved in shoppers' browsers refer to these ids.
+  id                 Int       @id
+  slug               String    @unique
+  name               String
+  brand              Brand     @relation(fields: [brandId], references: [id])
+  brandId            Int
+  category           Category
+  /// Slug from src/data/subcategories.ts, e.g. "lips".
+  subcategory        String?
+  priceCents         Int
+  originalPriceCents Int?
+  size               String
+  badge              String?
+  isNew              Boolean   @default(false)
+  isBestseller       Boolean   @default(false)
+  note               String
+  description        String
+  ingredients        String
+  benefits           String[]
+  texture            String
+  finish             String
+  ritual             String
+  /// Where it sits in a routine, e.g. "Complexion · Base".
+  routineStep        String
+  matches            String[]
+  /// Packaging drawn by the SVG fallback (see src/components/product-art).
+  type               String
+  packaging          String?
+  color              String
+  /// For sets: the ids of the products inside.
+  includes           Int[]     @default([])
+  /// Null when the product has shades: each shade then has its own stock.
+  stock              Int?
+  image              String?
+  gallery            String[]  @default([])
+  variants           Variant[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([category])
+  @@index([brandId])
+}
+
+/// A shade of a product, with its own price and stock.
+model Variant {
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+  /// The shade's id within its product, e.g. "custard".
+  key        String
+  name       String
+  /// Hex colour of the formula, for swatches.
+  swatch     String
+  priceCents Int
+  stock      Int
+  image      String?
+  /// Order in which the shades are shown.
+  position   Int
+
+  @@id([productId, key])
+}
