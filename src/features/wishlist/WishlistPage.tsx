@@ -1,33 +1,34 @@
 "use client";
 
-import Link from "next/link";
+import Button from "../../components/ui/Button";
+import ProductGrid, { ProductGridItem } from "../../components/ui/ProductGrid";
 import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
 import { useCommerce } from "../../hooks/useCommerce";
+import AccountLayout from "../account/AccountLayout";
+import styles from "../account/account.module.css";
 import ProductCard from "../products/ProductCard";
+
 export default function WishlistPage() {
   const { openCart } = useCartDrawer();
   const { wishlist } = useCommerce();
   const products = productRepository.getAll().filter((p) => wishlist.includes(p.id));
   return (
-    <main className="wishlistPage">
-      <span className="kicker">Saved for later</span>
-      <h1>Your wishlist</h1>
+    <AccountLayout title="Wishlist" current="/wishlist">
       {products.length ? (
-        <div className="productGrid">
+        <ProductGrid maxColumns={3}>
           {products.map((p) => (
-            <ProductCard key={p.id} product={p} onAdded={openCart} />
+            <ProductGridItem key={p.id}>
+              <ProductCard product={p} onAdded={openCart} />
+            </ProductGridItem>
           ))}
-        </div>
+        </ProductGrid>
       ) : (
-        <div className="emptyState">
-          <h2>Your edit is empty.</h2>
-          <p>Save products you want to return to.</p>
-          <Link className="button dark" href="/shop">
-            Discover the collection
-          </Link>
+        <div className={styles.empty}>
+          <p>Save products with the heart to find them here.</p>
+          <Button href="/shop">Shop all products</Button>
         </div>
       )}
-    </main>
+    </AccountLayout>
   );
 }

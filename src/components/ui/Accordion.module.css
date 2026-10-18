@@ -16,6 +16,17 @@
   list-style: none;
   cursor: pointer;
 }
+.sentence .summary {
+  min-height: 64px;
+  padding: var(--space-3) 0;
+  font: var(--weight-regular) var(--text-body) / 1.5 var(--font-body);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.sentence .content {
+  max-width: 64ch;
+  padding-right: var(--space-7);
+}
 .summary::-webkit-details-marker {
   display: none;
 }

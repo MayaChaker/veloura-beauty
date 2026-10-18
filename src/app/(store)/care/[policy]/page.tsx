@@ -19,5 +19,5 @@ export default async function Page({ params }: PageProps<"/care/[policy]">) {
   const { policy } = await params;
   const content = POLICIES[policy];
   if (!content) notFound();
-  return <PolicyPage content={content} />;
+  return <PolicyPage slug={policy} content={content} />;
 }
