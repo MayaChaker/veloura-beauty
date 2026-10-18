@@ -97,24 +97,30 @@ Some decisions worth calling out:
 
 ## Getting started
 
-Requires Node.js 20.9 or newer.
+Requires Node.js 20.9 or newer, and Docker for the local database.
 
 ```bash
-npm install
+npm install          # also generates the Prisma client
+cp .env.example .env
+npm run db:up        # Postgres in Docker
+npm run db:migrate   # create the tables
+npm run db:seed      # load the catalogue from src/data
 npm run dev          # http://localhost:3000
 ```
 
-| Script                 | What it does                   |
-| ---------------------- | ------------------------------ |
-| `npm run dev`          | Development server             |
-| `npm run build`        | Production build               |
-| `npm start`            | Serve the production build     |
-| `npm run test:ci`      | Run the test suite once        |
-| `npm run lint`         | ESLint, failing on any warning |
-| `npm run typecheck`    | TypeScript, strict mode        |
-| `npm run format:check` | Verify Prettier formatting     |
+| Script                 | What it does                         |
+| ---------------------- | ------------------------------------ |
+| `npm run dev`          | Development server                   |
+| `npm run build`        | Production build                     |
+| `npm start`            | Serve the production build           |
+| `npm run test:ci`      | Run the test suite once              |
+| `npm run lint`         | ESLint, failing on any warning       |
+| `npm run typecheck`    | TypeScript, strict mode              |
+| `npm run format:check` | Verify Prettier formatting           |
+| `npm run db:migrate`   | Apply schema changes to the database |
+| `npm run db:studio`    | Browse the database in the browser   |
 
-Optional environment variables are listed in [`.env.example`](.env.example).
+Environment variables are listed in [`.env.example`](.env.example).
 
 ## Testing
 
