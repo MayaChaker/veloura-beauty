@@ -1,89 +1,199 @@
-.page {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: var(--space-8) var(--gutter) var(--section-space);
-}
-.intro {
+/* The hero follows the homepage: a text panel beside the photograph. */
+.hero {
   display: grid;
-  gap: var(--space-5);
-  padding-bottom: var(--space-8);
+  background: var(--color-bone);
 }
-.copy {
+.heroText {
   display: grid;
+  align-content: center;
   gap: var(--space-4);
-  max-width: 60ch;
+  padding: var(--space-7) var(--gutter);
+}
+.heroText :global(.text-label) {
   color: var(--color-taupe);
 }
-.lead {
-  color: var(--color-umber);
-  font: var(--weight-light) var(--text-h5) / 1.45 var(--font-display);
+.title {
+  font-size: var(--text-h1);
 }
-.photo {
+.lead {
+  max-width: 42ch;
+  font-size: 1rem;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-3);
+}
+.heroPhoto {
   position: relative;
   aspect-ratio: 4 / 5;
   margin: 0;
   overflow: hidden;
-  background: var(--color-bone);
-}
-.photo img {
-  object-fit: cover;
 }
 
-/* Two short definition lists: how products are chosen, and how ordering works. */
-.block {
+/* Why Veloura: a headline and two short paragraphs. */
+.why,
+.choose,
+.ordering {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--section-space) var(--gutter) 0;
+}
+.why {
   display: grid;
   gap: var(--space-5);
-  padding: var(--space-8) 0 0;
 }
-.list {
+.prose {
   display: grid;
+  gap: var(--space-4);
+  max-width: 56ch;
+  color: var(--color-taupe);
+  font-size: 1rem;
+}
+
+/* How we choose: one product photograph per principle. */
+.choose {
+  display: grid;
+  gap: var(--space-6);
+}
+.criteria {
+  display: grid;
+  gap: var(--space-7) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.criteria li {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+}
+.criteriaPhoto {
+  aspect-ratio: 4 / 5;
+  margin-bottom: var(--space-3);
+  overflow: hidden;
+  background: var(--color-bone);
+}
+.criteria p {
+  max-width: 40ch;
+  color: var(--color-taupe);
+}
+
+/* The houses, as on the homepage: a bone band with every brand name. */
+.houses {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--section-space);
+  padding: var(--section-space) var(--gutter);
+  background: var(--color-bone);
+}
+.housesIntro {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  align-content: start;
+}
+.housesIntro a,
+.ordering > a {
+  margin-top: var(--space-2);
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  text-underline-offset: 6px;
+  text-decoration-color: var(--color-sand);
+}
+.brandList {
+  columns: 2;
+  column-gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.brandList li {
+  break-inside: avoid;
+}
+.brandList a {
+  display: block;
+  padding: var(--space-2) 0;
+  border-bottom: var(--border);
+  font: var(--weight-light) var(--text-h5) / 1.3 var(--font-display);
+  text-decoration: none;
+  transition: color var(--duration-hover) var(--ease);
+}
+.brandList a:hover {
+  color: var(--color-accent);
+}
+
+/* Ordering: three short facts from the policies. */
+.ordering {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+  padding-bottom: var(--section-space);
+}
+.ordering dl {
+  display: grid;
+  width: 100%;
   margin: 0;
   border-top: var(--border);
 }
-.list > div {
+.ordering dl > div {
   display: grid;
   gap: var(--space-1);
   padding: var(--space-4) 0;
   border-bottom: var(--border);
 }
-.list dt {
+.ordering dt {
   font-weight: var(--weight-medium);
 }
-.list dd {
+.ordering dd {
   margin: 0;
-  max-width: 60ch;
   color: var(--color-taupe);
 }
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-3) var(--space-6);
-  padding-top: var(--space-8);
+
+/* Phones show the photograph first, as on the homepage. */
+@media (max-width: 1023px) {
+  .heroPhoto {
+    order: -1;
+  }
 }
-.links a {
-  font-weight: var(--weight-medium);
-  text-underline-offset: 6px;
-  text-decoration-color: var(--color-sand);
-  transition: text-decoration-color var(--duration-hover) var(--ease);
-}
-.links a:hover {
-  text-decoration-color: var(--color-umber);
+
+@media (min-width: 700px) {
+  .criteria {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .brandList {
+    columns: 3;
+  }
+  .ordering dl {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
 }
 
 @media (min-width: 1024px) {
-  .intro,
-  .block {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  .hero {
+    grid-template-columns: 5fr 7fr;
+    min-height: min(calc(100vh - var(--header-height) - var(--announcement-height)), 720px);
+  }
+  .heroText {
+    padding: var(--space-8) var(--gutter);
+  }
+  .heroPhoto {
+    aspect-ratio: auto;
+  }
+  .why {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: var(--space-9);
+    align-items: start;
   }
-  .photo {
-    aspect-ratio: 21 / 9;
+  .houses {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    gap: var(--space-9);
+    padding-inline: max(var(--gutter), calc((100% - var(--container-max)) / 2 + var(--gutter)));
   }
-  .list > div {
-    grid-template-columns: 200px minmax(0, 1fr);
-    gap: var(--space-5);
-  }
-  .links {
-    padding-left: calc((100% - var(--space-9)) / 3 + var(--space-9));
+  .brandList {
+    columns: 3;
   }
 }
