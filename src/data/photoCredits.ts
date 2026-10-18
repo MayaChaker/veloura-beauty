@@ -246,11 +246,3 @@ export const PHOTO_CREDITS: Record<string, PhotoCredit> = {
     source: "https://images.unsplash.com/photo-1519669011783-4eaa95fa1b7d",
   },
 };
-
-/** Editorial photographs in public/images/editorial, keyed by file name. */
-export const EDITORIAL_CREDITS: Record<string, PhotoCredit> = {
-  "shop-the-look": {
-    photographer: "Daria Gordova",
-    source: "https://images.unsplash.com/photo-1611605472181-7962c1c85ed5",
-  },
-};

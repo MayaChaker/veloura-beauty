@@ -65,7 +65,7 @@ src/
 ├── repositories/        Access to the catalogue and to browser storage
 ├── services/            Order creation (demo or hosted checkout)
 ├── styles/              Design tokens and element defaults (components use CSS Modules)
-└── views/               Content pages (home, about, policies, 404)
+└── views/               Content pages (home, brands, policies, 404)
 ```
 
 Some decisions worth calling out:

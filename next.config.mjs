@@ -5,10 +5,6 @@ const nextConfig = {
   // Photographs are served above the default quality of 75: campaign images at 85, products at 90.
   images: { qualities: [75, 85, 90] },
 
-  async redirects() {
-    return [{ source: "/our-story", destination: "/about", permanent: true }];
-  },
-
   async headers() {
     return [
       {
