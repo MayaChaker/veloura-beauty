@@ -4,6 +4,3 @@
 /* Legacy page styles: each file is deleted when its pages move to the design system. */
 @import "./base.css";
 @import "./product-card.css";
-@import "./about.css";
-@import "./profile.css";
-@import "./policy.css";

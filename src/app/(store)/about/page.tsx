@@ -2,7 +2,8 @@ import AboutPage from "../../../views/AboutPage";
 
 export const metadata = {
   title: "Our Story",
-  description: "Why Veloura keeps a considered edit of skincare, makeup and everyday essentials.",
+  description:
+    "Veloura brings makeup, skincare, fragrance and haircare from the beauty houses you trust into one place.",
 };
 
 export default function Page() {

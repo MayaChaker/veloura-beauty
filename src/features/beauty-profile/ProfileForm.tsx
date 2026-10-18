@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Check } from "@mui/icons-material";
 import { useCustomer } from "../../hooks/useCustomer";
+import Button from "../../components/ui/Button";
 import type { BeautyProfile } from "../../types/customer";
+import styles from "../account/account.module.css";
 import ChoiceGroup from "./ChoiceGroup";
 
 const SKIN_TYPES = ["Balanced", "Dry", "Combination", "Oily", "Sensitive"];
@@ -19,16 +20,18 @@ export default function ProfileForm() {
   const [draft, setDraft] = useState(profile);
   const [saved, setSaved] = useState(false);
 
-  const toggle = (key: "skinGoals" | "preferences", value: string) =>
-    setDraft((current: BeautyProfile) => {
-      const values = current[key] || [];
-      return {
-        ...current,
-        [key]: values.includes(value)
-          ? values.filter((item) => item !== value)
-          : [...values, value],
-      };
+  const update = (next: BeautyProfile) => {
+    setDraft(next);
+    setSaved(false);
+  };
+
+  const toggle = (key: "skinGoals" | "preferences", value: string) => {
+    const values = draft[key] || [];
+    update({
+      ...draft,
+      [key]: values.includes(value) ? values.filter((item) => item !== value) : [...values, value],
     });
+  };
 
   const save = () => {
     saveProfile(draft);
@@ -36,42 +39,32 @@ export default function ProfileForm() {
   };
 
   return (
-    <section className="profileForm">
-      <label>
-        Skin type
-        <select
-          value={draft.skinType}
-          onChange={(event) => setDraft({ ...draft, skinType: event.target.value })}
-        >
-          {SKIN_TYPES.map((type) => (
-            <option key={type}>{type}</option>
-          ))}
-        </select>
-      </label>
+    <section className={styles.form} aria-label="Beauty profile">
+      <ChoiceGroup
+        legend="Skin type"
+        hint="The one that fits most days."
+        values={SKIN_TYPES}
+        selected={[draft.skinType]}
+        onToggle={(value) => update({ ...draft, skinType: value })}
+      />
       <ChoiceGroup
         legend="Skin concerns"
+        hint="Choose as many as you like."
         values={CONCERNS}
         selected={draft.skinGoals || []}
         onToggle={(value) => toggle("skinGoals", value)}
       />
       <ChoiceGroup
-        legend="Makeup and texture preferences"
+        legend="Texture and finish"
+        hint="How you like products to feel."
         values={PREFERENCES}
         selected={draft.preferences || []}
         onToggle={(value) => toggle("preferences", value)}
       />
-      <button className="button dark" onClick={save}>
-        {saved ? (
-          <>
-            <Check /> Profile saved
-          </>
-        ) : (
-          "Save profile"
-        )}
-      </button>
-      <p className="profileSaveStatus" role="status">
-        {saved ? "Your browser-saved preferences are up to date." : ""}
-      </p>
+      <div className={styles.save}>
+        <Button onClick={save}>Save profile</Button>
+        <p role="status">{saved ? "Saved in this browser." : ""}</p>
+      </div>
     </section>
   );
 }

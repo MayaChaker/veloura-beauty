@@ -1,0 +1,35 @@
+.page {
+  max-width: var(--container-max);
+  min-height: 60vh;
+  margin: 0 auto;
+  padding: var(--space-5) var(--gutter) var(--section-space);
+}
+.page > nav:first-child {
+  margin-bottom: var(--space-6);
+}
+.head {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+.head p {
+  max-width: 56ch;
+  color: var(--color-taupe);
+  font-size: var(--text-lg);
+}
+.contact {
+  margin-top: var(--space-6);
+  color: var(--color-taupe);
+  font-size: var(--text-small);
+}
+.contact a {
+  color: var(--color-umber);
+  text-underline-offset: 4px;
+  text-decoration-color: var(--color-sand);
+}
+
+@media (min-width: 1024px) {
+  .page > nav:first-child {
+    margin-bottom: var(--space-7);
+  }
+}

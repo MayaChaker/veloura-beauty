@@ -1,138 +1,87 @@
-"use client";
-
-// MUI icons render through Emotion, which needs the client runtime.
-import { ArrowForward } from "@mui/icons-material";
 import Link from "next/link";
 import EditorialImage from "../components/EditorialImage";
+import { BRANDS } from "../data/brands";
+import { FREE_SHIPPING_THRESHOLD } from "../domain/commerce/commerceConfig";
+import styles from "./AboutPage.module.css";
 
-const selectionCriteria = [
+const CRITERIA = [
   [
-    "01",
     "Performance",
-    "Products selected for quality, reliability, and how well they fit their intended purpose.",
+    "Products chosen for quality, reliability, and how well they do what they promise.",
   ],
-  [
-    "02",
-    "Experience",
-    "Textures, finishes, packaging, and details that make beauty enjoyable to use.",
-  ],
-  ["03", "Everyday Fit", "Products that can realistically become part of an everyday routine."],
+  ["Experience", "Textures, finishes, packaging and details that make beauty a pleasure to use."],
+  ["Everyday fit", "Products that can realistically become part of an everyday routine."],
 ];
 
 export default function AboutPage() {
+  const contact = process.env.NEXT_PUBLIC_CONTACT_EMAIL || "care@velourabeauty.com";
+  const ordering = [
+    [
+      "Delivery",
+      `Delivered within 3–5 business days after dispatch, complimentary on orders over $${FREE_SHIPPING_THRESHOLD}.`,
+    ],
+    ["Returns", "Unused products in their original packaging can be returned within 30 days."],
+    ["Questions", `Write to ${contact} with your order number.`],
+  ];
+
   return (
-    <main className="storyFinal">
-      <section className="storyFinalHero">
+    <main className={styles.page}>
+      <header className={styles.intro}>
+        <h1>Our story</h1>
+        <div className={styles.copy}>
+          <p className={styles.lead}>
+            Veloura brings makeup, skincare, fragrance and haircare from {BRANDS.length} beauty
+            houses into one place, from Chanel and Dior to The Ordinary and Olaplex.
+          </p>
+          <p>
+            We don’t make our own products; we choose them. Beauty shopping can feel endless, so we
+            keep the selection small enough to browse, and every product has a reason to be here.
+          </p>
+        </div>
+      </header>
+
+      <figure className={styles.photo}>
         <EditorialImage
-          name="category-skincare"
-          alt="A woman with fresh, dewy skin and wet hair"
-          sizes="100vw"
+          name="shop-the-look"
+          alt="A woman applying red lipstick in front of a mirror"
+          sizes="(max-width: 1023px) 100vw, 90vw"
           priority
         />
-        <div className="storyFinalHeroShade" aria-hidden="true" />
-        <div className="storyFinalHeroCopy">
-          <span className="storyEyebrow">Our story</span>
-          <h1>
-            Beauty, chosen
-            <br />
-            <em>with intention.</em>
-          </h1>
-          <p>
-            A considered edit of makeup, skincare, fragrance and hair from the brands you love,
-            selected to make finding what works for you feel simpler.
-          </p>
-        </div>
-        <span className="storyFinalHeroNote">Beauty, considered.</span>
-      </section>
+      </figure>
 
-      <section className="storyFinalPhilosophy">
-        <div className="storyFinalPhilosophyImage">
-          <EditorialImage
-            name="shop-the-look"
-            alt="A woman applying red lipstick in front of a mirror"
-            sizes="(max-width: 900px) 100vw, 50vw"
-          />
-        </div>
-        <div className="storyFinalPhilosophyCopy">
-          <span className="storyEyebrow">Why Veloura</span>
-          <h2>
-            Less searching.
-            <br />
-            <em>Better discoveries.</em>
-          </h2>
-          <p>
-            Beauty shopping can feel endless. Veloura brings together a more considered selection,
-            making it easier to discover products that fit your routine, preferences, and everyday
-            life.
-          </p>
-        </div>
-      </section>
-
-      <section className="storyEdit">
-        <div className="storyEditCopy">
-          <span className="storyEyebrow">The Veloura Edit</span>
-          <h2>
-            A considered collection,
-            <br />
-            <em>not an endless shelf.</em>
-          </h2>
-          <p>
-            We look for products that balance performance, experience, and everyday usefulness—so
-            every addition has a reason to be here.
-          </p>
-        </div>
-        <div className="storyEditImage">
-          <EditorialImage
-            name="category-fragrance"
-            alt="A hand holding a perfume bottle in front of a mirror"
-            sizes="(max-width: 900px) 100vw, 50vw"
-          />
-          <span>Selected with intention</span>
-        </div>
-      </section>
-
-      <section className="storyCriteria storyCriteriaClosing" aria-labelledby="criteria-title">
-        <header>
-          <span className="storyEyebrow">How we choose</span>
-          <h2 id="criteria-title">Chosen with a reason.</h2>
-        </header>
-        <div>
-          {selectionCriteria.map(([number, title, copy]) => (
-            <article key={number}>
-              <span>{number}</span>
-              <div>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-              </div>
-            </article>
+      <section className={styles.block} aria-labelledby="how-we-choose">
+        <h2 id="how-we-choose" className="text-h4">
+          How we choose
+        </h2>
+        <dl className={styles.list}>
+          {CRITERIA.map(([term, copy]) => (
+            <div key={term}>
+              <dt>{term}</dt>
+              <dd>{copy}</dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </section>
 
-      <section className="storyShelf storyDiscover">
-        <div className="storyShelfImage">
-          <EditorialImage
-            name="evening-routine"
-            alt="A woman pressing serum into her cheek"
-            sizes="(max-width: 900px) 100vw, 50vw"
-          />
-        </div>
-        <div className="storyShelfCopy">
-          <span className="storyEyebrow">Discover the edit</span>
-          <h2>
-            Find your next
-            <br />
-            everyday favorite.
-          </h2>
-          <p>
-            Explore makeup, skincare, fragrance and hair selected for real routines and individual
-            preferences.
-          </p>
-          <Link className="button light" href="/shop">
-            Shop the collection <ArrowForward />
-          </Link>
-        </div>
+      <section className={styles.block} aria-labelledby="ordering">
+        <h2 id="ordering" className="text-h4">
+          Ordering from Veloura
+        </h2>
+        <dl className={styles.list}>
+          {ordering.map(([term, copy]) => (
+            <div key={term}>
+              <dt>{term}</dt>
+              <dd>{copy}</dd>
+            </div>
+          ))}
+        </dl>
       </section>
+
+      <nav className={styles.links} aria-label="Continue">
+        <Link href="/shop">Shop all products</Link>
+        <Link href="/brands">Brands A–Z</Link>
+        <Link href="/care/shipping">Customer care</Link>
+      </nav>
     </main>
   );
 }
