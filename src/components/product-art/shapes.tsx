@@ -6,8 +6,8 @@ import { shade } from "./color";
 import type { PackagingColors } from "./packaging";
 
 // Fonts come from next/font CSS variables (see src/app/layout.jsx).
-const SERIF: CSSProperties = { fontFamily: "var(--serif)" };
-const SANS: CSSProperties = { fontFamily: "var(--sans)" };
+const SERIF: CSSProperties = { fontFamily: "var(--font-display)" };
+const SANS: CSSProperties = { fontFamily: "var(--font-body)" };
 
 export interface ShapeProps {
   pack: PackagingColors;

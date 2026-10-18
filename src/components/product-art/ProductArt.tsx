@@ -2,6 +2,7 @@ import { productRepository } from "../../repositories/productRepository";
 import type { Category, Product, ProductSet } from "../../types/commerce";
 import { getPackaging } from "./packaging";
 import { ProductShape } from "./shapes";
+import styles from "./ProductVisual.module.css";
 
 /** A catalogue product, optionally with a chosen shade (a ProductSelection fits). */
 export type ArtProduct = Product & { selectedVariant?: string; swatch?: string };
@@ -73,7 +74,7 @@ interface ProductArtProps {
  */
 export default function ProductArt({
   product,
-  className = "productArt",
+  className = styles.art,
   decorative = false,
 }: ProductArtProps) {
   if (!product) return null;

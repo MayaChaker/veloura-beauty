@@ -247,32 +247,8 @@ export const PHOTO_CREDITS: Record<string, PhotoCredit> = {
   },
 };
 
-/** Homepage photographs in public/images/editorial, keyed by file name. */
+/** Editorial photographs in public/images/editorial, keyed by file name. */
 export const EDITORIAL_CREDITS: Record<string, PhotoCredit> = {
-  hero: {
-    photographer: "Ayo Ogunseinde",
-    source: "https://images.unsplash.com/photo-1791292183261-158a21a5e713",
-  },
-  "category-makeup": {
-    photographer: "Good Faces",
-    source: "https://images.unsplash.com/photo-1632765866070-3fadf25d3d5b",
-  },
-  "category-skincare": {
-    photographer: "Fleur Kaan",
-    source: "https://images.unsplash.com/photo-1581182800629-7d90925ad072",
-  },
-  "category-fragrance": {
-    photographer: "Olena Bohovyk",
-    source: "https://images.unsplash.com/photo-1598121496608-3d0b9627155e",
-  },
-  "category-hair": {
-    photographer: "Hadis Safari",
-    source: "https://images.unsplash.com/photo-1535579710123-3c0f261c474e",
-  },
-  "evening-routine": {
-    photographer: "Laura Jaeger",
-    source: "https://images.unsplash.com/photo-1670201203208-055d6d79db4a",
-  },
   "shop-the-look": {
     photographer: "Daria Gordova",
     source: "https://images.unsplash.com/photo-1611605472181-7962c1c85ed5",
