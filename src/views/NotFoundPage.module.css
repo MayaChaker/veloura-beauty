@@ -1,0 +1,27 @@
+.page {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: start;
+  align-content: center;
+  max-width: var(--container-max);
+  min-height: 60vh;
+  margin: 0 auto;
+  padding: var(--section-space) var(--gutter);
+}
+.copy {
+  max-width: 48ch;
+  color: var(--color-taupe);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-3);
+}
+.actions > a:last-child {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  text-underline-offset: 6px;
+  text-decoration-color: var(--color-sand);
+}

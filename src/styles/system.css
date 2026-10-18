@@ -146,10 +146,27 @@ p {
   border: 0;
 }
 
+/* "Skip to content": hidden above the page until it receives keyboard focus. */
+.skipLink {
+  position: fixed;
+  top: -60px;
+  left: var(--space-4);
+  z-index: 200;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-umber);
+  color: var(--color-ivory);
+  text-decoration: none;
+}
+.skipLink:focus {
+  top: var(--space-3);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
 }

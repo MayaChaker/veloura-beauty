@@ -1,0 +1,14 @@
+/* A product photograph fills its frame; the frame sets the ratio and any hover zoom. */
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The SVG art keeps its proportions, with breathing room inside the frame. */
+.art {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 14% 12% 8%;
+}

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import styles from "./EditorialImage.module.css";
 
 interface EditorialImageProps {
   /** File name in public/images/editorial, without the extension. */
@@ -19,7 +20,7 @@ export default function EditorialImage({
 }: EditorialImageProps) {
   return (
     <Image
-      className="editorialImage"
+      className={styles.image}
       src={`/images/editorial/${name}.webp`}
       alt={alt}
       fill

@@ -18,6 +18,8 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
 | ![Shop](docs/screenshots/shop.jpg)               | ![Product page](docs/screenshots/product.jpg) |
 | **Shopping bag**                                 | **Checkout with a delivery map**              |
 | ![Shopping bag](docs/screenshots/cart.jpg)       | ![Checkout](docs/screenshots/checkout.jpg)    |
+| **Brands A–Z**                                   | **Customer care**                             |
+| ![Brands A–Z](docs/screenshots/brands.jpg)       | ![Customer care](docs/screenshots/care.jpg)   |
 | **Mobile**                                       |                                               |
 | ![Mobile home](docs/screenshots/mobile-home.jpg) |                                               |
 
@@ -34,7 +36,9 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
   threshold, and a three-step checkout (information, delivery, payment). The delivery step drops a
   pin on an OpenStreetMap map (Leaflet, no API key) and fills the street and area from it.
 - **Order confirmation** on its own URL, so it survives a reload.
-- **Beauty profile and wishlist**, persisted in `localStorage`.
+- **Account pages without an account**: beauty profile, order history and wishlist share one
+  side menu and are persisted in `localStorage`.
+- **Customer care** with a menu of topics and each topic's answers as an accordion.
 - **Accessibility**: keyboard-operable dialogs with focus trapping and focus return, labelled
   controls, a skip link, and reduced-motion support.
 
@@ -51,16 +55,16 @@ src/
 │   ├── (store)/         Storefront pages sharing the header and footer
 │   └── checkout/        Checkout and order confirmation, without store navigation
 ├── components/
-│   ├── layout/          Header, footer, search
+│   ├── layout/          Header, footer, search, side menu layout
 │   └── product-art/     Product photographs, with an SVG fallback
 ├── data/                Catalogue (one file per category), merchandising and photo credits
 ├── domain/              Framework-free business rules (cart, pricing, selection, wishlist)
-├── features/            One folder per journey: products, cart, checkout, wishlist, profile
+├── features/            One folder per journey: products, cart, checkout, account, wishlist, profile
 ├── hooks/               Commerce and customer state, persistence, modal behaviour
 ├── providers/           Client-side state shared by every page
 ├── repositories/        Access to the catalogue and to browser storage
 ├── services/            Order creation (demo or hosted checkout)
-├── styles/              Global styles split by area
+├── styles/              Design tokens and element defaults (components use CSS Modules)
 └── views/               Content pages (home, about, policies, 404)
 ```
 
@@ -122,7 +126,6 @@ production build on every push and pull request.
 
 ## Roadmap
 
-- The remaining content pages (customer care, about, beauty profile) in the new visual style.
 - A real payment provider behind the existing checkout steps.
 
 The full plan is in [`docs/refactor-roadmap.md`](docs/refactor-roadmap.md).

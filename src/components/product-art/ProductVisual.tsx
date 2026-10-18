@@ -1,5 +1,6 @@
 import Image from "next/image";
 import ProductArt, { type ArtProduct } from "./ProductArt";
+import styles from "./ProductVisual.module.css";
 
 interface ProductVisualProps {
   product?: ArtProduct | null;
@@ -28,7 +29,7 @@ export default function ProductVisual({
     : `${product.name}${product.selectedVariant ? ` in ${product.selectedVariant}` : ""}`;
   return (
     <Image
-      className="productPhoto"
+      className={styles.photo}
       src={product.image}
       alt={alt}
       width={1200}

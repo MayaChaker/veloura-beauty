@@ -15,7 +15,7 @@
 .head p {
   max-width: 56ch;
   color: var(--color-taupe);
-  font-size: var(--text-lg);
+  font: var(--weight-light) var(--text-h5) / 1.45 var(--font-display);
 }
 
 /* Beauty profile: one row per question, the choices beside it. */
