@@ -44,8 +44,9 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
 
 ## Tech stack
 
-Next.js 16 (App Router) · React 19 · TypeScript (strict) · CSS Modules · Framer Motion · Leaflet ·
-MUI icons · Jest and React Testing Library · ESLint · Prettier · GitHub Actions · Vercel
+Next.js 16 (App Router) · React 19 · TypeScript (strict) · PostgreSQL (Neon) · Prisma · CSS Modules ·
+Framer Motion · Leaflet · MUI icons · Jest and React Testing Library · ESLint · Prettier ·
+GitHub Actions · Vercel
 
 ## How it is built
 
@@ -71,6 +72,11 @@ src/
 
 Some decisions worth calling out:
 
+- **The catalogue lives in Postgres.** Products, brands and shades are read through one seam,
+  `getCatalogue()` on the server and `useCatalogue()` in client components, so no other code
+  knows where they come from. Each deploy runs `prisma migrate deploy` and a seed that only adds
+  missing products, so changes made in the database are never overwritten. Money is stored in
+  whole cents.
 - **Static where possible.** Every product, category and policy page is pre-rendered at build time
   (`generateStaticParams`) with its own title and description; unknown URLs return a real 404.
   Interactive parts (bag, filters, checkout) are client components inside those pages.

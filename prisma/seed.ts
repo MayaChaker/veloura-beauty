@@ -1,5 +1,6 @@
-// Fills the database from the catalogue files in src/data: `npx prisma db seed`.
-// Safe to run again: brands, products and shades are upserted by their ids.
+// Adds the catalogue files in src/data to the database: `npx prisma db seed`.
+// Runs on every deploy, so it only creates what is missing. Once a product is in the database,
+// the database is its source of truth: prices and stock changed there are never overwritten.
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
@@ -25,7 +26,13 @@ async function main() {
     brandIds.set(name, brand.id);
   }
 
-  for (const product of PRODUCTS) {
+  const existing = new Set(
+    (await db.product.findMany({ select: { id: true } })).map((product) => product.id),
+  );
+  let created = 0;
+
+  for (const [position, product] of PRODUCTS.entries()) {
+    if (existing.has(product.id)) continue;
     const brandId = brandIds.get(product.brand);
     if (brandId === undefined) throw new Error(`No brand for ${product.slug}`);
     const fields = {
@@ -56,29 +63,23 @@ async function main() {
       stock: product.variants?.length ? null : (product.stock ?? null),
       image: product.image ?? null,
       gallery: product.gallery ?? [],
+      position,
     };
-    const variants = (product.variants ?? []).map((variant, position) => ({
+    const variants = (product.variants ?? []).map((variant, index) => ({
       key: variant.id,
       name: variant.name,
       swatch: variant.swatch,
       priceCents: cents(variant.price),
       stock: variant.stock,
       image: variant.image ?? null,
-      position,
+      position: index,
     }));
 
-    // Shades are replaced as a whole, so one removed from the catalogue disappears here too.
-    await db.$transaction([
-      db.product.upsert({
-        where: { id: product.id },
-        update: fields,
-        create: { id: product.id, ...fields },
-      }),
-      db.variant.deleteMany({ where: { productId: product.id } }),
-      db.variant.createMany({
-        data: variants.map((variant) => ({ ...variant, productId: product.id })),
-      }),
-    ]);
+    // A product and its shades are written together, or not at all.
+    await db.product.create({
+      data: { id: product.id, ...fields, variants: { create: variants } },
+    });
+    created += 1;
   }
 
   const [brands, products, variants] = await Promise.all([
@@ -86,7 +87,9 @@ async function main() {
     db.product.count(),
     db.variant.count(),
   ]);
-  console.log(`Seeded ${brands} brands, ${products} products and ${variants} shades.`);
+  console.log(
+    `Added ${created} products. The database has ${brands} brands, ${products} products and ${variants} shades.`,
+  );
 }
 
 main()

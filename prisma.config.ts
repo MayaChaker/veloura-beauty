@@ -8,9 +8,9 @@ export default defineConfig({
     path: "prisma/migrations",
     seed: "tsx prisma/seed.ts",
   },
-  // `prisma generate` only reads the schema, so CI and builds can run it without a database;
-  // migrate and seed fail with a clear connection error when DATABASE_URL is missing.
+  // Migrations use Neon's direct connection when it exists (the pooled one cannot hold the lock
+  // migrate needs). `prisma generate` only reads the schema, so it works without either.
   datasource: {
-    url: process.env.DATABASE_URL ?? "",
+    url: process.env.DATABASE_URL_UNPOOLED ?? process.env.DATABASE_URL ?? "",
   },
 });
