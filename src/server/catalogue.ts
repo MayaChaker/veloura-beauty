@@ -1,10 +1,18 @@
 import "server-only";
 import { cache } from "react";
-import { PRODUCTS } from "../data/products";
 import { createCatalogue, type Catalogue } from "../domain/catalogue/catalogue";
+import { db } from "../lib/db";
+import { toProduct } from "./productRecord";
 
 /**
- * The catalogue for server code. Wrapped in React's cache(), so a page that asks for it from
- * several components builds it once per request.
+ * The catalogue for server code, read from the database: every product with its brand and
+ * shades, in listing order. Pages are pre-rendered, so this runs while building, not on
+ * every visit; React's cache() makes it run once per page render.
  */
-export const getCatalogue = cache(async (): Promise<Catalogue> => createCatalogue(PRODUCTS));
+export const getCatalogue = cache(async (): Promise<Catalogue> => {
+  const records = await db.product.findMany({
+    include: { brand: { select: { name: true } }, variants: { orderBy: { position: "asc" } } },
+    orderBy: { position: "asc" },
+  });
+  return createCatalogue(records.map(toProduct));
+});

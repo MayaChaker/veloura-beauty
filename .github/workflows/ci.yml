@@ -8,6 +8,23 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # A real Postgres for the build, which reads the catalogue from the database.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: veloura
+          POSTGRES_PASSWORD: veloura
+          POSTGRES_DB: veloura
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U veloura"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://veloura:veloura@localhost:5432/veloura
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,6 +36,8 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run test:ci
+      - run: npx prisma migrate deploy
+      - run: npx prisma db seed
       - run: npm run build
         env:
           CI: true

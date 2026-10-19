@@ -62,12 +62,15 @@ model Product {
   stock              Int?
   image              String?
   gallery            String[]  @default([])
+  /// Order in which products are listed when no sort is chosen.
+  position           Int       @default(0)
   variants           Variant[]
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
 
   @@index([category])
   @@index([brandId])
+  @@index([position])
 }
 
 /// A shade of a product, with its own price and stock.
