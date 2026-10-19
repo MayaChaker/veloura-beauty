@@ -1,4 +1,4 @@
-import { productRepository } from "../../repositories/productRepository";
+import type { Catalogue } from "../catalogue/catalogue";
 import type { ProductId, ProductSelection } from "../../types/commerce";
 
 /** Any object that points at a product, e.g. a stored or resolved bag line. */
@@ -16,12 +16,13 @@ export type SelectionInput = ProductId | string | ProductRef;
  * source of truth, so stale names or prices in saved data are never trusted.
  */
 export function resolveProductSelection(
+  catalogue: Catalogue,
   productOrId: SelectionInput,
   variantId = "",
 ): ProductSelection | null {
   const isObject = typeof productOrId === "object";
   const id = isObject ? productOrId.productId || productOrId.id : productOrId;
-  const product = productRepository.getById(id);
+  const product = catalogue.getById(id);
   if (!product) return null;
 
   const requestedVariant = variantId || (isObject ? productOrId.variantId : "") || "";

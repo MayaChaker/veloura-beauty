@@ -7,4 +7,5 @@ module.exports = createJestConfig({
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
+  moduleNameMapper: { "^server-only$": "<rootDir>/src/test/serverOnly.js" },
 });

@@ -2,19 +2,17 @@
 
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import ProductCard from "../../features/products/ProductCard";
 import SectionHeader from "../../components/ui/SectionHeader";
 import styles from "./BestsellerRail.module.css";
 
-const bestsellers = productRepository
-  .getAll()
-  .filter((product) => product.isBestseller)
-  .slice(0, 8);
-
 /** A horizontal rail of bestsellers: arrows on desktop, swipe with snapping on phones. */
 export default function BestsellerRail() {
+  const bestsellers = useCatalogue()
+    .products.filter((product) => product.isBestseller)
+    .slice(0, 8);
   const { openCart } = useCartDrawer();
   const trackRef = useRef<HTMLUListElement>(null);
 

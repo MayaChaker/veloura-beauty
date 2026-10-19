@@ -2,20 +2,21 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductPage from "../../../../features/products/ProductPage";
-import { productRepository } from "../../../../repositories/productRepository";
+import { getCatalogue } from "../../../../server/catalogue";
 
 // Every product page is pre-rendered at build time; unknown slugs 404.
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return productRepository.getAll().map((product) => ({ slug: product.slug }));
+export async function generateStaticParams() {
+  const { products } = await getCatalogue();
+  return products.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<"/product/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const product = productRepository.getBySlug(slug);
+  const product = (await getCatalogue()).getBySlug(slug);
   if (!product) return {};
   return {
     title: product.name,
@@ -31,7 +32,7 @@ export async function generateMetadata({
 
 export default async function Page({ params }: PageProps<"/product/[slug]">) {
   const { slug } = await params;
-  if (!productRepository.getBySlug(slug)) notFound();
+  if (!(await getCatalogue()).getBySlug(slug)) notFound();
   return (
     <Suspense>
       <ProductPage slug={slug} />

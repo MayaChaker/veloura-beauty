@@ -1,11 +1,11 @@
 import type { ReactElement } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import AppProviders from "../../providers/AppProviders";
 import { router } from "../../test/navigation";
 import CheckoutPage from "./CheckoutPage";
 import OrderConfirmationPage from "./OrderConfirmationPage";
+import { TestProviders } from "../../test/catalogue";
 
-const withProviders = (ui: ReactElement) => render(<AppProviders>{ui}</AppProviders>);
+const withProviders = (ui: ReactElement) => render(<TestProviders>{ui}</TestProviders>);
 const stored = (key: string) => JSON.parse(window.localStorage.getItem(key) ?? "null");
 const type = (label: string, value: string) =>
   fireEvent.change(screen.getByLabelText(label), { target: { value } });

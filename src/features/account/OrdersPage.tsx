@@ -3,9 +3,9 @@
 import Link from "next/link";
 import Button from "../../components/ui/Button";
 import ProductVisual from "../../components/product-art/ProductVisual";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
 import { money } from "../../lib/money";
-import { productRepository } from "../../repositories/productRepository";
 import AccountLayout from "./AccountLayout";
 import styles from "./account.module.css";
 
@@ -16,6 +16,7 @@ const formatDate = (iso: string) =>
 
 /** Orders placed in this browser, newest first. */
 export default function OrdersPage() {
+  const catalogue = useCatalogue();
   const { orders, hydrated } = useCommerce();
 
   return (
@@ -38,7 +39,7 @@ export default function OrdersPage() {
                 </div>
                 <ul className={styles.thumbs} aria-label="Products">
                   {order.items.map((item) => {
-                    const product = productRepository.getById(item.productId);
+                    const product = catalogue.getById(item.productId);
                     return (
                       <li key={`${item.productId}-${item.variantId ?? ""}`} title={product?.name}>
                         <ProductVisual product={product} sizes="56px" decorative />

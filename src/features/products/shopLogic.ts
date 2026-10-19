@@ -98,7 +98,7 @@ const tests = (filters: ShopFilters) => {
 type FacetKey = "brands" | "prices" | "stock";
 
 /** Products passing every filter except `skip`, used to count a facet's options honestly. */
-const matching = (products: Product[], filters: ShopFilters, skip?: FacetKey) => {
+const matching = (products: readonly Product[], filters: ShopFilters, skip?: FacetKey) => {
   const checks = tests(filters);
   return products.filter(
     (product) =>
@@ -109,7 +109,10 @@ const matching = (products: Product[], filters: ShopFilters, skip?: FacetKey) =>
   );
 };
 
-export function filterAndSortProducts(products: Product[], filters: ShopFilters): Product[] {
+export function filterAndSortProducts(
+  products: readonly Product[],
+  filters: ShopFilters,
+): Product[] {
   return [...matching(products, filters)].sort((a, b) => {
     if (filters.sort === "price-low") return a.price - b.price;
     if (filters.sort === "price-high") return b.price - a.price;
@@ -128,7 +131,7 @@ export interface FacetCounts {
  * How many products each filter option would show, given the other filters in use.
  * Options with no products are left for the sidebar to hide.
  */
-export function facetCounts(products: Product[], filters: ShopFilters): FacetCounts {
+export function facetCounts(products: readonly Product[], filters: ShopFilters): FacetCounts {
   const forBrands = matching(products, filters, "brands");
   const forPrices = matching(products, filters, "prices");
   const brandCounts = forBrands.reduce<Record<string, number>>((counts, product) => {

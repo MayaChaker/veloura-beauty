@@ -1,6 +1,5 @@
+import { brandHref, type Catalogue } from "../domain/catalogue/catalogue";
 import type { Category } from "../types/commerce";
-import { BRANDS, brandHref } from "./brands";
-import { PRODUCTS } from "./products";
 import { SUBCATEGORIES } from "./subcategories";
 
 export interface MenuLink {
@@ -68,12 +67,12 @@ const byCount = ([a, countA]: [string, number], [b, countB]: [string, number]) =
   countB - countA || a.localeCompare(b);
 
 /** The columns of an item's mega-menu panel, built from the catalogue; empty for plain links. */
-export function menuColumns(item: MenuItem): MenuColumn[] {
+export function menuColumns(item: MenuItem, catalogue: Catalogue): MenuColumn[] {
   if (item.brands) {
     // Every brand, A to Z, split into three columns.
     const links = [
       { label: "All brands A–Z", href: "/brands" },
-      ...BRANDS.map((brand) => ({ label: brand.name, href: brandHref(brand.name) })),
+      ...catalogue.brands.map((brand) => ({ label: brand.name, href: brandHref(brand.name) })),
     ];
     const size = Math.ceil(links.length / 3);
     return [0, 1, 2].map((index) => ({
@@ -83,7 +82,7 @@ export function menuColumns(item: MenuItem): MenuColumn[] {
   }
   if (!item.category || !item.href) return [];
 
-  const inCategory = PRODUCTS.filter((product) => product.category === item.category);
+  const inCategory = catalogue.products.filter((product) => product.category === item.category);
   const types = SUBCATEGORIES[item.category]
     .map((sub) => ({
       label: sub.label,

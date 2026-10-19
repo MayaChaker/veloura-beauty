@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Close, ShoppingBagOutlined } from "@mui/icons-material";
 import { FREE_SHIPPING_THRESHOLD } from "../../domain/commerce/commerceConfig";
 import { money } from "../../lib/money";
-import { productRepository } from "../../repositories/productRepository";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
 import { useModalDialog } from "../../hooks/useModalDialog";
 import Button from "../../components/ui/Button";
@@ -15,7 +15,6 @@ import { MOTION } from "../../theme/tokens";
 import CartLineItem from "./CartLineItem";
 import styles from "./CartDrawer.module.css";
 
-const catalogue = productRepository.getAll();
 const itemCount = (count: number) => `${count} ${count === 1 ? "item" : "items"}`;
 
 interface CartDrawerProps {
@@ -25,6 +24,7 @@ interface CartDrawerProps {
 
 /** The bag, sliding in from the right: delivery progress, lines, one suggestion, subtotal. */
 export default function CartDrawer({ open, close }: CartDrawerProps) {
+  const { products } = useCatalogue();
   const { cart, totals, updateQuantity, removeFromCart, addToCart } = useCommerce();
   const router = useRouter();
   const drawerRef = useRef<HTMLElement>(null);
@@ -36,7 +36,7 @@ export default function CartDrawer({ open, close }: CartDrawerProps) {
   const progress = Math.min(100, Math.round((merchandise / FREE_SHIPPING_THRESHOLD) * 100));
   // One suggestion: a single-shade product from the same category as the first line.
   const first = cart[0];
-  const suggestion = catalogue.find(
+  const suggestion = products.find(
     (product) =>
       !product.variants &&
       product.category === first?.category &&

@@ -1,28 +1,25 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import AppProviders from "../../providers/AppProviders";
-import { productRepository } from "../../repositories/productRepository";
 import { router, setLocation } from "../../test/navigation";
 import ShopPage from "./ShopPage";
+import { catalogue, TestProviders } from "../../test/catalogue";
 
 const renderShop = (props: Parameters<typeof ShopPage>[0]) =>
   render(
-    <AppProviders>
+    <TestProviders>
       <ShopPage {...props} />
-    </AppProviders>,
+    </TestProviders>,
   );
 
 test("filters are read from the URL so filtered links can be shared", () => {
   setLocation("/shop/makeup?brand=NARS&price=25-50");
   renderShop({ category: "makeup" });
-  const expected = productRepository
-    .getAll()
-    .filter(
-      (product) =>
-        product.category === "Makeup" &&
-        product.brand === "NARS" &&
-        product.price >= 25 &&
-        product.price < 50,
-    ).length;
+  const expected = catalogue.products.filter(
+    (product) =>
+      product.category === "Makeup" &&
+      product.brand === "NARS" &&
+      product.price >= 25 &&
+      product.price < 50,
+  ).length;
   expect(
     screen.getByText(`${expected} ${expected === 1 ? "product" : "products"}`),
   ).toBeInTheDocument();
@@ -36,7 +33,7 @@ test("a brand page shows the brand and only its products", () => {
   setLocation("/brands/chanel");
   renderShop({ brandSlug: "chanel" });
   expect(screen.getByRole("heading", { level: 1, name: "Chanel" })).toBeInTheDocument();
-  const count = productRepository.getAll().filter((product) => product.brand === "Chanel").length;
+  const count = catalogue.products.filter((product) => product.brand === "Chanel").length;
   expect(screen.getByText(`${count} products`)).toBeInTheDocument();
 });
 

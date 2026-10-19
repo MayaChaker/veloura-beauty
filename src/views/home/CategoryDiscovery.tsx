@@ -1,21 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CATEGORY_TILES } from "../../data/homepage";
-import { PRODUCTS } from "../../data/products";
 import { SUBCATEGORIES } from "../../data/subcategories";
 import SectionHeader from "../../components/ui/SectionHeader";
+import { getCatalogue } from "../../server/catalogue";
 import styles from "./CategoryDiscovery.module.css";
 
 const plural = (count: number) => `${count} ${count === 1 ? "product" : "products"}`;
 
 /** The four campaign portraits in a staggered row, each with its count and subcategories. */
-export default function CategoryDiscovery() {
+export default async function CategoryDiscovery() {
+  const catalogue = await getCatalogue();
   return (
     <section className={styles.section} aria-labelledby="categories-title">
       <SectionHeader id="categories-title" title="Discover by" emphasis="category" />
       <ul className={styles.grid}>
         {CATEGORY_TILES.map((tile, index) => {
-          const products = PRODUCTS.filter((product) => product.category === tile.category);
+          const products = catalogue.products.filter(
+            (product) => product.category === tile.category,
+          );
           const subs = SUBCATEGORIES[tile.category].filter((sub) =>
             products.some((product) => product.subcategory === sub.slug),
           );

@@ -6,11 +6,12 @@ import { OUT_OF_STOCK_IDS } from "../../data/merchandising";
 import { MENU } from "../../data/navigation";
 import { SUBCATEGORIES } from "../../data/subcategories";
 import { resolveProductSelection } from "../../domain/product/productSelection";
-import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
 import { useCustomer } from "../../hooks/useCustomer";
 import Breadcrumb, { type Crumb } from "../../components/ui/Breadcrumb";
+import type { Catalogue } from "../../domain/catalogue/catalogue";
 import type { Product } from "../../types/commerce";
 import NotFoundPage from "../../views/NotFoundPage";
 import ProductGallery from "./ProductGallery";
@@ -18,12 +19,11 @@ import ProductPurchase from "./ProductPurchase";
 import ProductShelf from "./ProductShelf";
 import styles from "./ProductPage.module.css";
 
-const catalogue = productRepository.getAll();
 const DEFAULT_STOCK = 24;
 
 /** Products from the same category or sharing a concern, closest first. */
-const pairsFor = (product: Product) =>
-  catalogue
+const pairsFor = (catalogue: Catalogue, product: Product) =>
+  catalogue.products
     .filter(
       (item) =>
         item.id !== product.id &&
@@ -49,13 +49,14 @@ const crumbsFor = (product: Product): Crumb[] => {
 };
 
 export default function ProductPage({ slug }: { slug: string }) {
+  const catalogue = useCatalogue();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
   const { openCart } = useCartDrawer();
   const { addToCart } = useCommerce();
   const { addRecentlyViewed, recentlyViewed } = useCustomer();
-  const product = productRepository.getBySlug(slug);
+  const product = catalogue.getBySlug(slug);
   const productId = product?.id;
 
   useEffect(() => {
@@ -68,11 +69,11 @@ export default function ProductPage({ slug }: { slug: string }) {
   const shade =
     product.variants?.find((variant) => variant.id === params.get("variant")) ??
     product.variants?.[0];
-  const display = resolveProductSelection(product, shade?.id) ?? product;
+  const display = resolveProductSelection(catalogue, product, shade?.id) ?? product;
   const stock = OUT_OF_STOCK_IDS.includes(product.id)
     ? 0
     : (shade?.stock ?? product.stock ?? DEFAULT_STOCK);
-  const recent = productRepository
+  const recent = catalogue
     .getManyByIds(recentlyViewed.filter((id) => id !== product.id))
     .slice(0, 4);
 
@@ -127,7 +128,7 @@ export default function ProductPage({ slug }: { slug: string }) {
         <ProductShelf
           title="Pairs well with"
           eyebrow="Complete the look"
-          products={pairsFor(product)}
+          products={pairsFor(catalogue, product)}
           openCart={openCart}
         />
         <ProductShelf title="Recently viewed" products={recent} openCart={openCart} />
