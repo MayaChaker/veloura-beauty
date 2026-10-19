@@ -1,14 +1,13 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { productRepository } from "../../repositories/productRepository";
-import { CommerceProvider } from "../../hooks/useCommerce";
 import type { Product } from "../../types/commerce";
 import ProductCard from "./ProductCard";
+import { catalogue, TestProviders } from "../../test/catalogue";
 
 const renderCard = (product: Product) =>
   render(
-    <CommerceProvider>
+    <TestProviders>
       <ProductCard product={product} />
-    </CommerceProvider>,
+    </TestProviders>,
   );
 
 const stored = (key: string) => JSON.parse(window.localStorage.getItem(key) ?? "null");
@@ -19,7 +18,7 @@ const catalogueProduct = (product: Product | undefined): Product => {
 };
 
 test("a shade selection updates the product art and the added cart variant", () => {
-  const product = catalogueProduct(productRepository.getBySlug("estee-lauder-double-wear"));
+  const product = catalogueProduct(catalogue.getBySlug("estee-lauder-double-wear"));
   renderCard(product);
   expect(screen.getByRole("img", { name: product.name })).toBeTruthy();
   expect(screen.getByRole("link", { name: "Choose shade" })).toHaveAttribute(
@@ -41,7 +40,7 @@ test("a shade selection updates the product art and the added cart variant", () 
 });
 
 test("wishlist remains functional on a refined card", () => {
-  const product = catalogueProduct(productRepository.getAll()[0]);
+  const product = catalogueProduct(catalogue.products[0]);
   renderCard(product);
   fireEvent.click(screen.getByRole("button", { name: `Add ${product.name} to wishlist` }));
   expect(stored("velouraBeauty.wishlist.v1")).toEqual([product.id]);

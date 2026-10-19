@@ -2,8 +2,8 @@
 
 import Button from "../../components/ui/Button";
 import ProductGrid, { ProductGridItem } from "../../components/ui/ProductGrid";
-import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
 import AccountLayout from "../account/AccountLayout";
 import styles from "../account/account.module.css";
@@ -12,7 +12,7 @@ import ProductCard from "../products/ProductCard";
 export default function WishlistPage() {
   const { openCart } = useCartDrawer();
   const { wishlist } = useCommerce();
-  const products = productRepository.getAll().filter((p) => wishlist.includes(p.id));
+  const products = useCatalogue().products.filter((p) => wishlist.includes(p.id));
   return (
     <AccountLayout title="Wishlist" current="/wishlist">
       {products.length ? (

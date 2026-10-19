@@ -1,12 +1,12 @@
 import type { ReactElement } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import AppProviders from "../../providers/AppProviders";
 import { POLICIES } from "../../data/policies";
 import PolicyPage from "../../views/PolicyPage";
 import BeautyProfilePage from "../beauty-profile/BeautyProfilePage";
 import OrdersPage from "./OrdersPage";
+import { TestProviders } from "../../test/catalogue";
 
-const withProviders = (ui: ReactElement) => render(<AppProviders>{ui}</AppProviders>);
+const withProviders = (ui: ReactElement) => render(<TestProviders>{ui}</TestProviders>);
 const stored = (key: string) => JSON.parse(window.localStorage.getItem(key) ?? "null");
 
 test("customer care lists every topic and opens the first question", () => {

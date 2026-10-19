@@ -78,6 +78,8 @@ export interface SingleProduct extends ProductBase {
 export interface ProductSet extends ProductBase {
   type: "set";
   includes: ProductId[];
+  /** The products in `includes`, attached by createCatalogue so the set can be drawn. */
+  parts?: SingleProduct[];
 }
 
 export type Product = SingleProduct | ProductSet;

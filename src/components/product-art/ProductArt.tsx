@@ -1,4 +1,3 @@
-import { productRepository } from "../../repositories/productRepository";
 import type { Category, Product, ProductSet } from "../../types/commerce";
 import { getPackaging } from "./packaging";
 import { ProductShape } from "./shapes";
@@ -42,7 +41,7 @@ function Piece({ product, tint }: { product: Product; tint?: string }) {
 }
 
 function SetPieces({ product }: { product: ProductSet }) {
-  const items = productRepository.getManyByIds(product.includes);
+  const items = product.parts ?? [];
   const layout = SET_LAYOUTS[items.length] ?? THREE_PIECE;
   return (
     <g>

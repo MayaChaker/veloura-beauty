@@ -6,6 +6,7 @@ import Link from "next/link";
 import { OUT_OF_STOCK_IDS } from "../../data/merchandising";
 import { reviewsFor } from "../../data/reviews";
 import { resolveProductSelection } from "../../domain/product/productSelection";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
 import ProductVisual from "../../components/product-art/ProductVisual";
 import Badge, { isBadgeKind, type BadgeKind } from "../../components/ui/Badge";
@@ -35,12 +36,13 @@ export const badgeFor = (product: Product): BadgeKind | undefined => {
 };
 
 export default function ProductCard({ product, onAdded, priority = false }: ProductCardProps) {
+  const catalogue = useCatalogue();
   const { addToCart } = useCommerce();
   const [selectedId, setSelectedId] = useState("");
   const [justAdded, setJustAdded] = useState(false);
   const resetTimerRef = useRef<number | undefined>(undefined);
   const selected = product.variants?.find((variant) => variant.id === selectedId);
-  const display = resolveProductSelection(product, selected?.id) ?? product;
+  const display = resolveProductSelection(catalogue, product, selected?.id) ?? product;
   const outOfStock = OUT_OF_STOCK_IDS.includes(product.id) || selected?.stock === 0;
   const needsShade = Boolean(product.variants && !selected);
   const productHref = `/product/${product.slug}${selected ? `?variant=${selected.id}` : ""}`;

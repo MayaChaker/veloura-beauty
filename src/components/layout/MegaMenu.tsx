@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAVIGATION, menuColumns, type MenuItem } from "../../data/navigation";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import styles from "./MegaMenu.module.css";
 
 /** Category links mark their section; filtered links (New in) never claim the whole shop. */
@@ -14,7 +15,7 @@ const isCurrent = (pathname: string, href?: string) =>
 const releaseFocus = () => (document.activeElement as HTMLElement | null)?.blur();
 
 function Panel({ item }: { item: MenuItem }) {
-  const columns = menuColumns(item);
+  const columns = menuColumns(item, useCatalogue());
   if (!columns.length) return null;
   return (
     <div className={styles.panel}>

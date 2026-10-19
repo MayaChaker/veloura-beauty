@@ -3,7 +3,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { brandSlug } from "../src/data/brands";
+import { brandSlug } from "../src/domain/catalogue/catalogue";
 import { PRODUCTS } from "../src/data/products";
 
 const db = new PrismaClient({

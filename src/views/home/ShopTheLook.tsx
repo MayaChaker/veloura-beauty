@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
 import { money } from "../../lib/money";
 import Button from "../../components/ui/Button";
@@ -12,18 +12,19 @@ import type { Product } from "../../types/commerce";
 import styles from "./ShopTheLook.module.css";
 
 /** The products that recreate the campaign's red lip. None has shades, so all three add at once. */
-const LOOK = [
+const LOOK_SLUGS = [
   "chanel-rouge-allure",
   "armani-luminous-silk-foundation",
   "too-faced-better-than-sex-mascara",
-]
-  .map((slug) => productRepository.getBySlug(slug))
-  .filter((product): product is Product => product !== undefined);
-
-const TOTAL = LOOK.reduce((sum, product) => sum + product.price, 0);
+];
 
 /** An editorial break between the product rows: the campaign photograph and its products. */
 export default function ShopTheLook() {
+  const { getBySlug } = useCatalogue();
+  const look = LOOK_SLUGS.map((slug) => getBySlug(slug)).filter(
+    (product): product is Product => product !== undefined,
+  );
+  const total = look.reduce((sum, product) => sum + product.price, 0);
   const { addToCart } = useCommerce();
   const { openCart } = useCartDrawer();
   const [added, setAdded] = useState(false);
@@ -39,7 +40,7 @@ export default function ShopTheLook() {
     timerRef.current = window.setTimeout(() => setAdded(false), 1600);
   };
 
-  if (LOOK.length < 3) return null;
+  if (look.length < 3) return null;
 
   return (
     <section className={styles.section} aria-labelledby="look-title">
@@ -61,7 +62,7 @@ export default function ShopTheLook() {
           A satin red, a luminous base and lashes with volume: three products, one look.
         </p>
         <ol className={styles.list}>
-          {LOOK.map((product) => (
+          {look.map((product) => (
             <li key={product.id}>
               <Link href={`/product/${product.slug}`} className={styles.thumb}>
                 {product.image && (
@@ -87,8 +88,8 @@ export default function ShopTheLook() {
             </li>
           ))}
         </ol>
-        <Button fullWidth onClick={() => add(LOOK)}>
-          {added ? "Added to bag" : `Add all three · ${money(TOTAL)}`}
+        <Button fullWidth onClick={() => add(look)}>
+          {added ? "Added to bag" : `Add all three · ${money(total)}`}
         </Button>
       </div>
     </section>

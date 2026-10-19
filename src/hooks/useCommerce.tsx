@@ -11,6 +11,7 @@ import type { SelectionInput } from "../domain/product/productSelection";
 import { toggleWishlistItem } from "../domain/wishlist/wishlist";
 import { STORAGE_KEYS } from "../repositories/storageRepository";
 import type { CartLine, Order, ProductId, Totals } from "../types/commerce";
+import { useCatalogue } from "./useCatalogue";
 import { usePersistentState } from "./usePersistentState";
 
 export interface CommerceActions {
@@ -39,18 +40,20 @@ export interface CommerceState extends CommerceActions {
 const CommerceContext = createContext<CommerceState | null>(null);
 
 export function CommerceProvider({ children }: { children: ReactNode }) {
+  const catalogue = useCatalogue();
   const [cart, setCart, hydrated] = usePersistentState<CartEntry[]>(STORAGE_KEYS.cart, []);
   const [promoCode, setPromoCode] = usePersistentState(STORAGE_KEYS.promo, "");
   const [wishlist, setWishlist] = usePersistentState<ProductId[]>(STORAGE_KEYS.wishlist, []);
   const [orders, setOrders] = usePersistentState<Order[]>(STORAGE_KEYS.orders, []);
 
-  // Actions only depend on state setters, so their identity never changes and
-  // components can list them as effect dependencies safely.
+  // Actions only depend on state setters and the catalogue, which the server sends once per
+  // page, so their identity is stable and components can list them as effect dependencies.
   const actions = useMemo<CommerceActions>(
     () => ({
       addToCart: (selection, quantity) =>
-        setCart((items) => addCartItem(items, selection, quantity)),
-      updateQuantity: (id, delta) => setCart((items) => updateCartItemQuantity(items, id, delta)),
+        setCart((items) => addCartItem(catalogue, items, selection, quantity)),
+      updateQuantity: (id, delta) =>
+        setCart((items) => updateCartItemQuantity(catalogue, items, id, delta)),
       removeFromCart: (id) => setCart((items) => removeCartItem(items, id)),
       clearCart: () => {
         setCart([]);
@@ -65,10 +68,10 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
       toggleWishlist: (id) => setWishlist((items) => toggleWishlistItem(items, id)),
       addOrder: (order) => setOrders((items) => [order, ...items]),
     }),
-    [setCart, setOrders, setPromoCode, setWishlist],
+    [catalogue, setCart, setOrders, setPromoCode, setWishlist],
   );
 
-  const canonicalCart = useMemo(() => resolveCart(cart), [cart]);
+  const canonicalCart = useMemo(() => resolveCart(catalogue, cart), [catalogue, cart]);
   const totals = useMemo(
     () => calculateTotals(canonicalCart, promoCode),
     [canonicalCart, promoCode],

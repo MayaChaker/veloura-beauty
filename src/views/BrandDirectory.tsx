@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search } from "@mui/icons-material";
-import { brandHref, type Brand } from "../data/brands";
+import { brandHref, type Brand } from "../domain/catalogue/catalogue";
 import ProductVisual from "../components/product-art/ProductVisual";
 import type { Product } from "../types/commerce";
 import styles from "./BrandsPage.module.css";

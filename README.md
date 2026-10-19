@@ -58,11 +58,12 @@ src/
 │   ├── layout/          Header, footer, search, side menu layout
 │   └── product-art/     Product photographs, with an SVG fallback
 ├── data/                Catalogue (one file per category), merchandising and photo credits
-├── domain/              Framework-free business rules (cart, pricing, selection, wishlist)
+├── domain/              Framework-free business rules (catalogue, cart, pricing, selection, wishlist)
 ├── features/            One folder per journey: products, cart, checkout, account, wishlist, profile
 ├── hooks/               Commerce and customer state, persistence, modal behaviour
 ├── providers/           Client-side state shared by every page
-├── repositories/        Access to the catalogue and to browser storage
+├── repositories/        Access to browser storage
+├── server/              Server-only data access (the catalogue)
 ├── services/            Order creation (demo or hosted checkout)
 ├── styles/              Design tokens and element defaults (components use CSS Modules)
 └── views/               Content pages (home, brands, policies, 404)

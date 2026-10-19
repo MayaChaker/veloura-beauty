@@ -1,17 +1,18 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BRANDS, getBrand } from "../../../../data/brands";
 import ShopPage from "../../../../features/products/ShopPage";
+import { getCatalogue } from "../../../../server/catalogue";
 
 export const dynamicParams = false;
 
-export function generateStaticParams() {
-  return BRANDS.map((brand) => ({ slug: brand.slug }));
+export async function generateStaticParams() {
+  const { brands } = await getCatalogue();
+  return brands.map((brand) => ({ slug: brand.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/brands/[slug]">): Promise<Metadata> {
-  const brand = getBrand((await params).slug);
+  const brand = (await getCatalogue()).getBrand((await params).slug);
   return brand
     ? {
         title: brand.name,
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: PageProps<"/brands/[slug]">):
 
 export default async function Page({ params }: PageProps<"/brands/[slug]">) {
   const { slug } = await params;
-  if (!getBrand(slug)) notFound();
+  if (!(await getCatalogue()).getBrand(slug)) notFound();
   return (
     <Suspense>
       <ShopPage brandSlug={slug} />

@@ -1,7 +1,8 @@
 import { resolveProductSelection } from "./productSelection";
+import { catalogue } from "../../test/catalogue";
 
 test("resolves a valid product by ID", () => {
-  expect(resolveProductSelection(22)).toMatchObject({
+  expect(resolveProductSelection(catalogue, 22)).toMatchObject({
     id: 22,
     productId: 22,
     slug: "maybelline-the-city-mini-palette",
@@ -10,7 +11,7 @@ test("resolves a valid product by ID", () => {
 });
 
 test("resolves a selected variant with its canonical identity", () => {
-  expect(resolveProductSelection(10, "deep")).toMatchObject({
+  expect(resolveProductSelection(catalogue, 10, "deep")).toMatchObject({
     id: 10,
     name: "Double Wear Stay-in-Place Foundation",
     productId: 10,
@@ -21,10 +22,13 @@ test("resolves a selected variant with its canonical identity", () => {
 });
 
 test("falls back to the base product when a variant is absent or invalid", () => {
-  expect(resolveProductSelection(10)).toMatchObject({ productId: 10, cartId: "10" });
-  expect(resolveProductSelection(10, "missing")).toMatchObject({ productId: 10, cartId: "10" });
+  expect(resolveProductSelection(catalogue, 10)).toMatchObject({ productId: 10, cartId: "10" });
+  expect(resolveProductSelection(catalogue, 10, "missing")).toMatchObject({
+    productId: 10,
+    cartId: "10",
+  });
 });
 
 test("returns null for a missing product", () => {
-  expect(resolveProductSelection(999)).toBeNull();
+  expect(resolveProductSelection(catalogue, 999)).toBeNull();
 });

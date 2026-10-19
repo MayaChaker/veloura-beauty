@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check, LocalShippingOutlined, Replay } from "@mui/icons-material";
-import { brandHref } from "../../data/brands";
+import { brandHref } from "../../domain/catalogue/catalogue";
 import { POLICIES } from "../../data/policies";
 import { FREE_SHIPPING_THRESHOLD } from "../../domain/commerce/commerceConfig";
 import { money } from "../../lib/money";

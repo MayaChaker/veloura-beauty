@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Albert_Sans, Noto_Serif_Display } from "next/font/google";
 import AppProviders from "../providers/AppProviders";
+import { getCatalogue } from "../server/catalogue";
 import "../styles/index.css";
 
 // Self-hosted at build time: no request to Google at runtime and no layout shift.
@@ -33,11 +34,12 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#2a231e" };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const { products } = await getCatalogue();
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable}`}>
       <body>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders products={products}>{children}</AppProviders>
       </body>
     </html>
   );

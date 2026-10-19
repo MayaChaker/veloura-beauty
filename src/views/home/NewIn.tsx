@@ -1,19 +1,17 @@
 "use client";
 
-import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import ProductCard from "../../features/products/ProductCard";
 import ProductGrid, { ProductGridItem } from "../../components/ui/ProductGrid";
 import SectionHeader from "../../components/ui/SectionHeader";
 import styles from "./NewIn.module.css";
 
-const newIn = productRepository
-  .getAll()
-  .filter((product) => product.isNew)
-  .slice(0, 4);
-
 /** The latest arrivals, four across under a section header. */
 export default function NewIn() {
+  const newIn = useCatalogue()
+    .products.filter((product) => product.isNew)
+    .slice(0, 4);
   const { openCart } = useCartDrawer();
   if (!newIn.length) return null;
   return (

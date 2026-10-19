@@ -2,8 +2,9 @@
 
 import { useState, type CSSProperties, type ReactNode } from "react";
 import { reviewsFor } from "../data/reviews";
-import { productRepository } from "../repositories/productRepository";
+import type { Product } from "../types/commerce";
 import { useCartDrawer } from "../hooks/useCartDrawer";
+import { useCatalogue } from "../hooks/useCatalogue";
 import Accordion from "../components/ui/Accordion";
 import Badge from "../components/ui/Badge";
 import Breadcrumb from "../components/ui/Breadcrumb";
@@ -20,15 +21,12 @@ import SectionHeader from "../components/ui/SectionHeader";
 import ProductCard from "../features/products/ProductCard";
 import styles from "./StyleguidePage.module.css";
 
-const products = productRepository.getAll();
-const sample = [
+const SAMPLE_SLUGS = [
   "estee-lauder-double-wear",
   "dior-sauvage-eau-de-parfum",
   "glossier-solution",
   "olaplex-no-6-bond-smoother",
-]
-  .map((slug) => productRepository.getBySlug(slug))
-  .filter((product) => product !== undefined);
+];
 
 const COLOURS = [
   ["--color-ivory", "#F6F2EB", "Page background"],
@@ -67,19 +65,23 @@ function Block({ title, note, children }: { title: string; note?: string; childr
   );
 }
 
-const countBy = (key: (product: (typeof products)[number]) => string) =>
+const countBy = (products: readonly Product[], key: (product: Product) => string) =>
   products.reduce<Record<string, number>>((counts, product) => {
     counts[key(product)] = (counts[key(product)] ?? 0) + 1;
     return counts;
   }, {});
 
 export default function StyleguidePage() {
+  const { products, getBySlug } = useCatalogue();
+  const sample = SAMPLE_SLUGS.map((slug) => getBySlug(slug)).filter(
+    (product) => product !== undefined,
+  );
   const { openCart } = useCartDrawer();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [category, setCategory] = useState<string[]>([]);
   const [brands, setBrands] = useState<string[]>([]);
-  const categories = countBy((product) => product.category);
-  const brandCounts = countBy((product) => product.brand);
+  const categories = countBy(products, (product) => product.category);
+  const brandCounts = countBy(products, (product) => product.brand);
 
   return (
     <main className={`container ${styles.page}`}>

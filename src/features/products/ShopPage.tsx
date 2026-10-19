@@ -3,10 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Close, Tune } from "@mui/icons-material";
-import { getBrand } from "../../data/brands";
 import { SUBCATEGORIES } from "../../data/subcategories";
-import { productRepository } from "../../repositories/productRepository";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
+import { useCatalogue } from "../../hooks/useCatalogue";
 import Breadcrumb, { type Crumb } from "../../components/ui/Breadcrumb";
 import Button from "../../components/ui/Button";
 import Drawer from "../../components/ui/Drawer";
@@ -26,8 +25,6 @@ import {
 } from "./shopLogic";
 import { useShopFilters } from "./useShopFilters";
 import styles from "./ShopPage.module.css";
-
-const catalogue = productRepository.getAll();
 
 const CATEGORY_LABELS: Record<string, { label: string; category: Category }> = {
   makeup: { label: "Makeup", category: "Makeup" },
@@ -61,6 +58,7 @@ interface NavLink {
  * Filters live in the URL.
  */
 export default function ShopPage({ category, brandSlug, search = false }: ShopPageProps) {
+  const { products: catalogue, getBrand } = useCatalogue();
   const { openCart } = useCartDrawer();
   const brand = brandSlug ? getBrand(brandSlug) : undefined;
   const shop = useShopFilters({ category, brand: brand?.name });

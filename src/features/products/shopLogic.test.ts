@@ -1,4 +1,3 @@
-import { productRepository } from "../../repositories/productRepository";
 import type { Product } from "../../types/commerce";
 import {
   EMPTY_FILTERS,
@@ -7,8 +6,9 @@ import {
   pageCount,
   searchableProductText,
 } from "./shopLogic";
+import { catalogue } from "../../test/catalogue";
 
-const PRODUCTS = productRepository.getAll();
+const PRODUCTS = catalogue.products;
 
 test("search covers shade names and product benefits", () => {
   const foundation = PRODUCTS.find(
