@@ -10,5 +10,6 @@ module.exports = createJestConfig({
   moduleNameMapper: {
     "^server-only$": "<rootDir>/src/test/serverOnly.js",
     "/server/catalogue$": "<rootDir>/src/test/serverCatalogue.ts",
+    "/server/orders/getOrder$": "<rootDir>/src/test/serverOrders.ts",
   },
 });
