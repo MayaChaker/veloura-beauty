@@ -2,7 +2,6 @@ import type { ReactElement } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { router } from "../../test/navigation";
 import CheckoutPage from "./CheckoutPage";
-import OrderConfirmationPage from "./OrderConfirmationPage";
 import { TestProviders } from "../../test/catalogue";
 
 const withProviders = (ui: ReactElement) => render(<TestProviders>{ui}</TestProviders>);
@@ -35,7 +34,7 @@ const fillToPayment = () => {
   fireEvent.click(screen.getByRole("button", { name: /continue to payment/i }));
 };
 
-test("a shopper checks out through the API and the confirmation renders", async () => {
+test("a shopper checks out through the API", async () => {
   seedBag();
   window.localStorage.setItem("velouraBeauty.promoCode.v1", JSON.stringify("VELOURA10"));
   const api = mockOrderApi(201, {
@@ -44,7 +43,7 @@ test("a shopper checks out through the API and the confirmation renders", async 
     placedAt: "2026-10-20T10:00:00.000Z",
     totalCents: 7010,
   });
-  const { unmount } = withProviders(<CheckoutPage />);
+  withProviders(<CheckoutPage />);
 
   // $69 foundation - 10% = $62.10, plus $8 delivery. The summary is in the phone bar and the
   // desktop column, so each line appears twice.
@@ -68,11 +67,6 @@ test("a shopper checks out through the API and the confirmation renders", async 
   expect(router.replace).toHaveBeenCalledWith("/checkout/confirmation/cm2x8fq0000demo");
   expect(order).toMatchObject({ reference: "VB-7K2M9Q", total: 70.1, payment: "Cash on delivery" });
   expect(stored("velouraBeauty.cart.v2")).toEqual([]);
-
-  unmount();
-  withProviders(<OrderConfirmationPage orderId={order.id} />);
-  expect(await screen.findByText("Thank you, Maya.")).toBeInTheDocument();
-  expect(screen.getByText("Order VB-7K2M9Q")).toBeInTheDocument();
 });
 
 test("only cash on delivery can be chosen until a payment provider is connected", async () => {
@@ -121,9 +115,4 @@ test("contact details are validated by the browser before continuing", async () 
 test("an empty bag is sent back to the shop only after saved state has loaded", async () => {
   withProviders(<CheckoutPage />);
   await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/shop"));
-});
-
-test("an unknown order shows the not-found page", async () => {
-  withProviders(<OrderConfirmationPage orderId="VB-missing" />);
-  expect(await screen.findByText("We couldn’t find that page.")).toBeInTheDocument();
 });

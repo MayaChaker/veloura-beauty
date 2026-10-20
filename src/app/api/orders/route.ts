@@ -1,10 +1,13 @@
+import { after } from "next/server";
+import { sendOrderConfirmation } from "../../../server/email/sendOrderConfirmation";
 import { orderInputSchema } from "../../../server/orders/orderInput";
 import { placeOrder } from "../../../server/orders/placeOrder";
 import { OrderError } from "../../../server/orders/priceOrder";
 
 /**
  * POST /api/orders: places an order.
- * 201 { id, reference, placedAt, totalCents } · 400 invalid input · 404 product gone ·
+ * 201 { id, reference, placedAt, totalCents }, then the confirmation email is sent ·
+ * 400 invalid input · 404 product gone ·
  * 409 out of stock · 500 anything else (details are logged, never sent).
  */
 export async function POST(request: Request) {
@@ -22,7 +25,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    return Response.json(await placeOrder(parsed.data), { status: 201 });
+    const order = await placeOrder(parsed.data);
+    // After the response: the shopper does not wait for the email, and it cannot fail the order.
+    after(() => sendOrderConfirmation(order.id));
+    return Response.json(order, { status: 201 });
   } catch (error) {
     if (error instanceof OrderError) {
       return Response.json({ error: error.message }, { status: error.status });

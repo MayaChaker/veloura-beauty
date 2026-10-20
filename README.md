@@ -35,7 +35,9 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
 - **Bag and checkout**: quantities capped at stock, a promo code (`VELOURA10`), a free-delivery
   threshold, and a three-step checkout (information, delivery, payment). The delivery step drops a
   pin on an OpenStreetMap map (Leaflet, no API key) and fills the street and area from it.
-- **Order confirmation** on its own URL, so it survives a reload.
+- **Order confirmation** read from the database on its own unguessable URL, and a confirmation
+  email (Resend) sent after the response, so the shopper never waits for it and a failed email
+  never fails the order.
 - **Account pages without an account**: beauty profile, order history and wishlist share one
   side menu and are persisted in `localStorage`.
 - **Customer care** with a menu of topics and each topic's answers as an accordion.

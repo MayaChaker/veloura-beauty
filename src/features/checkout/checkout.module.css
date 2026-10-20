@@ -533,6 +533,58 @@
 .confirmation .review div {
   grid-template-columns: 90px 1fr;
 }
+/* What was ordered, with the server's totals. */
+.receipt {
+  display: grid;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: left;
+}
+.receipt ul {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.receipt li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--space-4);
+  align-items: baseline;
+  font-size: var(--text-small);
+}
+.receipt li small {
+  display: block;
+  color: var(--color-taupe);
+  font-size: var(--text-caption);
+}
+.receipt dl {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding-top: var(--space-4);
+  border-top: var(--border);
+  font-size: var(--text-small);
+}
+.receipt dl div {
+  display: flex;
+  justify-content: space-between;
+}
+.receipt dt {
+  color: var(--color-taupe);
+}
+.receipt dd {
+  margin: 0;
+}
+.receiptTotal {
+  padding-top: var(--space-2);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+}
+.receipt .receiptTotal dt {
+  color: var(--color-umber);
+}
 .confirmCheck {
   display: grid;
   place-items: center;
