@@ -38,8 +38,10 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
 - **Order confirmation** read from the database on its own unguessable URL, and a confirmation
   email (Resend) sent after the response, so the shopper never waits for it and a failed email
   never fails the order.
-- **Account pages without an account**: beauty profile, order history and wishlist share one
-  side menu and are persisted in `localStorage`.
+- **Accounts** with email and password (Better Auth): passwords are hashed, sessions live in an
+  httpOnly cookie, other sites' requests are refused, and orders placed while signed in are linked
+  to the account. Guests can still check out.
+- **Account pages**: beauty profile, order history and wishlist share one side menu.
 - **Customer care** with a menu of topics and each topic's answers as an accordion.
 - **Accessibility**: keyboard-operable dialogs with focus trapping and focus return, labelled
   controls, a skip link, and reduced-motion support.

@@ -21,9 +21,10 @@ export interface PlacedOrder {
 /**
  * Saves an order and takes its products off the stock in one transaction: either all of it
  * happens, or none of it does. Each stock update only applies while enough is left, so two
- * shoppers buying the last item at the same moment cannot both succeed.
+ * shoppers buying the last item at the same moment cannot both succeed. A signed-in shopper's
+ * order is linked to their account.
  */
-export async function placeOrder(input: OrderInput): Promise<PlacedOrder> {
+export async function placeOrder(input: OrderInput, userId?: string): Promise<PlacedOrder> {
   return db.$transaction(async (tx) => {
     const products = await tx.product.findMany({
       where: { id: { in: input.items.map((item) => item.productId) } },
@@ -56,6 +57,7 @@ export async function placeOrder(input: OrderInput): Promise<PlacedOrder> {
     const order = await tx.order.create({
       data: {
         reference: newReference(),
+        userId: userId ?? null,
         paymentMethod: "Cash",
         email: contact.email,
         firstName: contact.firstName,

@@ -40,7 +40,7 @@ export default function SideNavLayout({
             ))}
           </ul>
         </nav>
-        {note && <p className={styles.note}>{note}</p>}
+        {note && <div className={styles.note}>{note}</div>}
       </aside>
       <div className={styles.content}>{children}</div>
     </div>

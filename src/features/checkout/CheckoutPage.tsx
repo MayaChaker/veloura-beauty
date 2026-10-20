@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ExpandMore } from "@mui/icons-material";
 import { money } from "../../lib/money";
 import { useCommerce } from "../../hooks/useCommerce";
+import { useSession } from "../../lib/authClient";
 import { orderService } from "../../services/orderService";
 import type { ContactDetails, PaymentMethod, ShippingAddress } from "../../types/commerce";
 import CheckoutHeader from "./CheckoutHeader";
@@ -31,6 +32,7 @@ export default function CheckoutPage() {
   const { cart, hydrated, totals, promoCode, addOrder, clearCart } = useCommerce();
   const [step, setStep] = useState(1);
   const [contact, setContact] = useState(emptyContact);
+  const { data: session } = useSession();
   const [shipping, setShipping] = useState(emptyShipping);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [placing, setPlacing] = useState(false);
@@ -42,6 +44,21 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (emptyBag) router.replace("/shop");
   }, [emptyBag, router]);
+
+  // A signed-in shopper's name and email are filled in once, without replacing anything typed.
+  // Adjusting state while rendering (not in an effect) avoids a second render with empty fields.
+  const account = session?.user;
+  const [prefilledFor, setPrefilledFor] = useState<string | null>(null);
+  if (account && prefilledFor !== account.id) {
+    setPrefilledFor(account.id);
+    const [firstName = "", ...rest] = account.name.trim().split(/\s+/);
+    setContact((current) => ({
+      ...current,
+      email: current.email || account.email,
+      firstName: current.firstName || firstName,
+      lastName: current.lastName || rest.join(" "),
+    }));
+  }
 
   // Each step starts at the top of the page.
   useEffect(() => {

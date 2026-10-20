@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import { auth } from "../../../lib/auth";
 import { sendOrderConfirmation } from "../../../server/email/sendOrderConfirmation";
 import { orderInputSchema } from "../../../server/orders/orderInput";
 import { placeOrder } from "../../../server/orders/placeOrder";
@@ -25,7 +26,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const order = await placeOrder(parsed.data);
+    // Guests can order too; a signed-in shopper's order is linked to their account.
+    const session = await auth.api.getSession({ headers: request.headers });
+    const order = await placeOrder(parsed.data, session?.user.id);
     // After the response: the shopper does not wait for the email, and it cannot fail the order.
     after(() => sendOrderConfirmation(order.id));
     return Response.json(order, { status: 201 });
