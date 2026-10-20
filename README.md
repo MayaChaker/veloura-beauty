@@ -38,7 +38,7 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
 - **Order confirmation** read from the database on its own unguessable URL, and a confirmation
   email (Resend) sent after the response, so the shopper never waits for it and a failed email
   never fails the order.
-- **Accounts** with email and password (Better Auth): passwords are hashed, sessions live in an
+- **Accounts** with email and password, or Google (Better Auth): passwords are hashed, sessions live in an
   httpOnly cookie, other sites' requests are refused, and orders placed while signed in are linked
   to the account. Guests can still check out.
 - **Account pages**: beauty profile, order history and wishlist share one side menu.
