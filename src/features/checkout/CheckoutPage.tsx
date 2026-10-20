@@ -32,7 +32,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(1);
   const [contact, setContact] = useState(emptyContact);
   const [shipping, setShipping] = useState(emptyShipping);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cash");
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -69,10 +69,6 @@ export default function CheckoutPage() {
         promoCode,
         total: totals.total,
       });
-      if ("redirectUrl" in order) {
-        window.location.assign(order.redirectUrl);
-        return;
-      }
       addOrder(order);
       setPlaced(true);
       router.replace(`/checkout/confirmation/${order.id}`);

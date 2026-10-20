@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { OUT_OF_STOCK_IDS } from "../../data/merchandising";
 import { MENU } from "../../data/navigation";
+import { DEFAULT_STOCK } from "../../domain/commerce/commerceConfig";
 import { SUBCATEGORIES } from "../../data/subcategories";
 import { resolveProductSelection } from "../../domain/product/productSelection";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
@@ -18,8 +19,6 @@ import ProductGallery from "./ProductGallery";
 import ProductPurchase from "./ProductPurchase";
 import ProductShelf from "./ProductShelf";
 import styles from "./ProductPage.module.css";
-
-const DEFAULT_STOCK = 24;
 
 /** Products from the same category or sharing a concern, closest first. */
 const pairsFor = (catalogue: Catalogue, product: Product) =>

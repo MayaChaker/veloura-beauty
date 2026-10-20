@@ -9,7 +9,6 @@ import {
 import { PAYMENT_OPTIONS } from "../../domain/commerce/paymentMethods";
 import { money } from "../../lib/money";
 import Button from "../../components/ui/Button";
-import { Input } from "../../components/ui/Field";
 import type { ContactDetails, PaymentMethod, ShippingAddress } from "../../types/commerce";
 import { formatAddress } from "./checkoutForm";
 import styles from "./checkout.module.css";
@@ -85,49 +84,27 @@ export default function PaymentStep({
             const Icon = ICONS[option.id];
             const chosen = method === option.id;
             return (
-              <div key={option.id} className={styles.method} data-chosen={chosen}>
+              <div
+                key={option.id}
+                className={styles.method}
+                data-chosen={chosen}
+                data-available={option.available}
+              >
                 <label>
                   <input
                     type="radio"
                     name="payment"
                     value={option.id}
                     checked={chosen}
+                    disabled={!option.available}
                     onChange={() => onMethod(option.id)}
                   />
                   <Icon aria-hidden="true" />
                   <span>
                     {option.label}
-                    <small>{option.note}</small>
+                    <small>{option.available ? option.note : "Coming soon"}</small>
                   </span>
                 </label>
-                {chosen && option.id === "card" && (
-                  // Card details are never stored or sent: the fields have no name, and a
-                  // payment provider will replace them with its own secure fields.
-                  <div className={styles.cardFields}>
-                    <div className={styles.wide}>
-                      <Input
-                        label="Card number"
-                        inputMode="numeric"
-                        autoComplete="cc-number"
-                        placeholder="1234 5678 9012 3456"
-                      />
-                    </div>
-                    <Input label="Expiry date" autoComplete="cc-exp" placeholder="MM / YY" />
-                    <Input
-                      label="Security code"
-                      inputMode="numeric"
-                      autoComplete="cc-csc"
-                      placeholder="CVC"
-                    />
-                    <div className={styles.wide}>
-                      <Input
-                        label="Name on card"
-                        autoComplete="cc-name"
-                        placeholder="As shown on the card"
-                      />
-                    </div>
-                  </div>
-                )}
               </div>
             );
           })}
@@ -145,7 +122,7 @@ export default function PaymentStep({
         </button>
         <Button type="submit" disabled={placing}>
           <LockOutlined aria-hidden="true" />
-          {placing ? "Placing order…" : `Pay ${money(total)}`}
+          {placing ? "Placing order…" : `Place order · ${money(total)}`}
         </Button>
       </div>
       <p className={styles.terms}>

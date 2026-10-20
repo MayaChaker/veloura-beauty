@@ -90,3 +90,64 @@ model Variant {
 
   @@id([productId, key])
 }
+
+enum OrderStatus {
+  Placed
+  Shipped
+  Delivered
+  Cancelled
+}
+
+enum PaymentMethod {
+  Cash
+}
+
+/// An order as placed at checkout. Contact and address are copied in, so later changes to a
+/// shopper's details never rewrite past orders.
+model Order {
+  /// Random and unguessable: the confirmation page is reached by this id alone.
+  id             String        @id @default(cuid())
+  /// Short reference shown to the shopper and the care team, e.g. "VB-7K2M9Q".
+  reference      String        @unique
+  status         OrderStatus   @default(Placed)
+  paymentMethod  PaymentMethod
+  email          String
+  firstName      String
+  lastName       String
+  phone          String
+  area           String
+  street         String
+  building       String
+  floor          String
+  directions     String
+  country        String
+  latitude       Float?
+  longitude      Float?
+  promoCode      String?
+  subtotalCents  Int
+  discountCents  Int
+  shippingCents  Int
+  totalCents     Int
+  items          OrderItem[]
+  createdAt      DateTime      @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
+
+/// One line of an order. Name, brand, shade and price are a snapshot of the moment of purchase.
+model OrderItem {
+  id             Int     @id @default(autoincrement())
+  order          Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId        String
+  productId      Int
+  variantKey     String?
+  name           String
+  brand          String
+  shade          String?
+  image          String?
+  unitPriceCents Int
+  quantity       Int
+
+  @@index([orderId])
+}

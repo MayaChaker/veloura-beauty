@@ -24,7 +24,7 @@ export default function OrderConfirmationPage({ orderId }: { orderId: string }) 
         <span className={styles.confirmCheck}>
           <Check aria-hidden="true" />
         </span>
-        <p className="text-label text-muted">Order {order.id}</p>
+        <p className="text-label text-muted">Order {order.reference ?? order.id}</p>
         <h1>Thank you, {order.contact.firstName}.</h1>
         <p className={styles.cardNote}>Your order has been received.</p>
         <dl className={`${styles.card} ${styles.review}`}>

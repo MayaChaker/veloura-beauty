@@ -1,11 +1,11 @@
 import { resolveProductSelection, type SelectionInput } from "../product/productSelection";
 import type { CartLine, StoredCartLine } from "../../types/commerce";
 import type { Catalogue } from "../catalogue/catalogue";
+import { DEFAULT_STOCK } from "../commerce/commerceConfig";
 
 /** Bag state may still contain lines loaded from storage before they are resolved. */
 export type CartEntry = StoredCartLine | CartLine;
 
-const DEFAULT_STOCK = 24;
 const lineId = (item: CartEntry) => item.cartId || String(item.id);
 
 /** Adds `quantity` of a product (one by default), never beyond its stock. */

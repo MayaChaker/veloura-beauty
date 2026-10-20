@@ -98,9 +98,12 @@ Some decisions worth calling out:
   `storageRepository`.
 - **One hook for every modal surface.** The bag, quick view, filters and mobile menu share
   `useModalDialog` for scroll lock, focus trapping, Escape to close and focus return.
-- **Checkout is ready for a real payment provider.** Setting `NEXT_PUBLIC_CHECKOUT_URL` makes the
-  last step post product ids and quantities to a server endpoint that creates a hosted payment
-  session; the server, not the browser, decides prices.
+- **The server prices every order.** Checkout posts only product ids, shades and quantities to
+  `POST /api/orders`. The route validates them with Zod, prices the order from the database,
+  and saves it while taking the items off the stock in one transaction; each stock update only
+  applies while enough is left, so the last item cannot be sold twice. Orders keep a snapshot of
+  names and prices, and are reached by an unguessable id. Cash on delivery is the only payment
+  method until a provider is connected; the others are shown as coming soon.
 
 ## Getting started
 

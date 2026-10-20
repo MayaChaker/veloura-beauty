@@ -4,8 +4,7 @@ import ProductVisual from "../../components/product-art/ProductVisual";
 import QuantityStepper from "../../components/ui/QuantityStepper";
 import type { CartLine } from "../../types/commerce";
 import styles from "./CartDrawer.module.css";
-
-const DEFAULT_STOCK = 24;
+import { DEFAULT_STOCK } from "../../domain/commerce/commerceConfig";
 
 interface CartLineItemProps {
   item: CartLine;
