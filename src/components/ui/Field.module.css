@@ -84,3 +84,17 @@
 .count {
   color: var(--color-taupe);
 }
+
+/* A control inside the input's right edge, e.g. Show for a password. */
+.withTrailing {
+  position: relative;
+}
+.hasTrailing {
+  padding-right: var(--space-9);
+}
+.trailing {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  transform: translateY(-50%);
+}

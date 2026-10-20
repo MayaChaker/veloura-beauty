@@ -8,8 +8,16 @@ const vercelOrigins = [process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL]
   .filter(Boolean)
   .map((host) => `https://${host}`);
 
+const google =
+  process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    ? { clientId: process.env.GOOGLE_CLIENT_ID, clientSecret: process.env.GOOGLE_CLIENT_SECRET }
+    : null;
+
+/** "Continue with Google" is offered only when its keys are configured. */
+export const googleSignInEnabled = google !== null;
+
 /**
- * Accounts with email and password (Better Auth). Passwords are hashed (scrypt) before they
+ * Accounts with email and password, or Google (Better Auth). Passwords are hashed (scrypt) before they
  * reach the database; a signed-in browser holds only a random session token, in an httpOnly,
  * SameSite cookie that page scripts cannot read. Sign-in attempts are rate limited.
  */
@@ -23,6 +31,10 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     maxPasswordLength: 128,
   },
+  // Google proves the shopper owns the address, so a Google sign-in joins an existing account
+  // with the same email instead of failing or creating a second one.
+  socialProviders: google ? { google } : {},
+  account: { accountLinking: { enabled: true, trustedProviders: ["google"] } },
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24, // extended at most once a day while in use

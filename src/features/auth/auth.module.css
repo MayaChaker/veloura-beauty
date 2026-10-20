@@ -1,28 +1,150 @@
 .page {
-  display: grid;
-  gap: var(--space-6);
-  width: 100%;
-  max-width: 420px;
-  min-height: 60vh;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: var(--section-space) var(--gutter);
-  align-content: start;
+  padding: var(--space-5) var(--gutter) var(--section-space);
 }
+/* One card, two panels: the form, then what an account gives. */
+.card {
+  display: grid;
+  max-width: 1000px;
+  margin: 0 auto;
+  border: var(--border);
+  background: var(--color-paper);
+}
+.panel {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+}
+.aside {
+  border-top: var(--border);
+  background: var(--color-bone);
+}
+.title {
+  font-size: clamp(2rem, 1.7rem + 0.8vw, 2.25rem);
+}
+.intro {
+  margin-top: calc(-1 * var(--space-2));
+  color: var(--color-taupe);
+}
+
+.google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  height: var(--control-height);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--color-white);
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  cursor: pointer;
+  transition: border-color var(--duration-hover) var(--ease);
+}
+.google:hover:not(:disabled) {
+  border-color: var(--color-umber);
+}
+.google:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.or {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-taupe);
+  font-size: var(--text-caption);
+}
+.or::before,
+.or::after {
+  content: "";
+  height: 1px;
+  background: var(--color-line);
+}
+
 .form {
   display: grid;
   gap: var(--space-4);
+}
+.show {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-taupe);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.show:hover {
+  color: var(--color-umber);
 }
 .error {
   color: var(--color-error);
   font-size: var(--text-small);
 }
-.switch {
+.fine {
+  color: var(--color-taupe);
+  font-size: var(--text-caption);
+}
+.fine a {
+  color: var(--color-umber);
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-sand);
+}
+
+.perks {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.perks li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: var(--space-3);
+}
+.perks svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+}
+.perks p {
   color: var(--color-taupe);
   font-size: var(--text-small);
 }
-.switch a {
+.perks strong {
+  display: block;
   color: var(--color-umber);
+  font-size: var(--text-body);
   font-weight: var(--weight-medium);
-  text-underline-offset: 4px;
-  text-decoration-color: var(--color-sand);
+}
+.switch {
+  padding-top: var(--space-4);
+  border-top: var(--border);
+  font-size: var(--text-small);
+}
+.switch a {
+  font-weight: var(--weight-medium);
+}
+
+@media (min-width: 900px) {
+  .page {
+    padding-top: var(--space-8);
+  }
+  .card {
+    grid-template-columns: 1.1fr 1fr;
+  }
+  .panel {
+    padding: var(--space-8) var(--space-8) var(--space-8);
+  }
+  .aside {
+    border-top: 0;
+    border-left: var(--border);
+  }
 }

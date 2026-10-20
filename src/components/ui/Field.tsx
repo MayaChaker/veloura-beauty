@@ -50,21 +50,38 @@ export function Input({
   hint,
   error,
   hideLabel,
+  trailing,
   id,
   className,
   ...rest
-}: FieldProps & InputHTMLAttributes<HTMLInputElement>) {
+}: FieldProps &
+  InputHTMLAttributes<HTMLInputElement> & {
+    /** A control inside the field's right edge, e.g. a password's Show button. */
+    trailing?: ReactNode;
+  }) {
   const autoId = useId();
   const inputId = id ?? autoId;
+  const input = (
+    <input
+      id={inputId}
+      className={[styles.control, trailing ? styles.hasTrailing : "", className]
+        .filter(Boolean)
+        .join(" ")}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={describedBy(inputId, { label, hint, error })}
+      {...rest}
+    />
+  );
   return (
     <FieldFrame id={inputId} label={label} hint={hint} error={error} hideLabel={hideLabel}>
-      <input
-        id={inputId}
-        className={[styles.control, className].filter(Boolean).join(" ")}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={describedBy(inputId, { label, hint, error })}
-        {...rest}
-      />
+      {trailing ? (
+        <div className={styles.withTrailing}>
+          {input}
+          <div className={styles.trailing}>{trailing}</div>
+        </div>
+      ) : (
+        input
+      )}
     </FieldFrame>
   );
 }
