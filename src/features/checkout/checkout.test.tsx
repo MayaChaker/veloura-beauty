@@ -15,16 +15,15 @@ const seedBag = () =>
     JSON.stringify([{ productId: 14, cartId: "14", quantity: 1 }]),
   );
 
-test("a shopper can check out and the confirmation renders from saved orders", async () => {
-  seedBag();
-  window.localStorage.setItem("velouraBeauty.promoCode.v1", JSON.stringify("VELOURA10"));
-  const { unmount } = withProviders(<CheckoutPage />);
-
-  // $69 foundation - 10% = $62.10, plus $8 delivery. The summary is in the phone bar and the
-  // desktop column, so each line appears twice.
-  expect(await screen.findAllByText("Promotion (VELOURA10)")).toHaveLength(2);
-  expect(screen.getAllByText("$70.10").length).toBeGreaterThan(0);
-
+/** Stands in for POST /api/orders and returns the mock, to read what checkout sent. */
+const mockOrderApi = (status: number, body: object) => {
+  const fetchMock = jest
+    .fn()
+    .mockResolvedValue({ ok: status < 400, status, json: async () => body });
+  global.fetch = fetchMock as unknown as typeof fetch;
+  return fetchMock;
+};
+const fillToPayment = () => {
   type("Email", "maya@example.com");
   type("First name", "Maya");
   type("Last name", "Chaker");
@@ -34,44 +33,71 @@ test("a shopper can check out and the confirmation renders from saved orders", a
   type("Street", "Port street");
   type("Building", "Building 3");
   fireEvent.click(screen.getByRole("button", { name: /continue to payment/i }));
+};
+
+test("a shopper checks out through the API and the confirmation renders", async () => {
+  seedBag();
+  window.localStorage.setItem("velouraBeauty.promoCode.v1", JSON.stringify("VELOURA10"));
+  const api = mockOrderApi(201, {
+    id: "cm2x8fq0000demo",
+    reference: "VB-7K2M9Q",
+    placedAt: "2026-10-20T10:00:00.000Z",
+    totalCents: 7010,
+  });
+  const { unmount } = withProviders(<CheckoutPage />);
+
+  // $69 foundation - 10% = $62.10, plus $8 delivery. The summary is in the phone bar and the
+  // desktop column, so each line appears twice.
+  expect(await screen.findAllByText("Promotion (VELOURA10)")).toHaveLength(2);
+  expect(screen.getAllByText("$70.10").length).toBeGreaterThan(0);
+
+  fillToPayment();
   expect(screen.getByText("Building 3, Port street, Tripoli, El Mina")).toBeInTheDocument();
-  fireEvent.click(screen.getByLabelText(/cash on delivery/i));
-  fireEvent.click(screen.getByRole("button", { name: "Pay $70.10" }));
+  fireEvent.click(screen.getByRole("button", { name: "Place order · $70.10" }));
 
   await waitFor(() => expect(router.replace).toHaveBeenCalled());
+  // Only ids, shades and quantities go to the server: never a price or a total.
+  const [url, init] = api.mock.calls[0];
+  expect(url).toBe("/api/orders");
+  const sent = JSON.parse(init.body);
+  expect(sent.items).toEqual([{ productId: 14, quantity: 1 }]);
+  expect(sent).toMatchObject({ paymentMethod: "cash", promoCode: "VELOURA10" });
+  expect(JSON.stringify(sent)).not.toMatch(/price|total/i);
+
   const [order] = stored("velouraBeauty.orders.v1");
-  expect(router.replace).toHaveBeenCalledWith(`/checkout/confirmation/${order.id}`);
-  expect(router.replace).not.toHaveBeenCalledWith("/shop");
-  expect(order).toMatchObject({ total: 70.1, paymentMethod: "cash", payment: "Cash on delivery" });
-  expect(order.shipping).toMatchObject({ area: "Tripoli, El Mina", building: "Building 3" });
+  expect(router.replace).toHaveBeenCalledWith("/checkout/confirmation/cm2x8fq0000demo");
+  expect(order).toMatchObject({ reference: "VB-7K2M9Q", total: 70.1, payment: "Cash on delivery" });
   expect(stored("velouraBeauty.cart.v2")).toEqual([]);
 
   unmount();
   withProviders(<OrderConfirmationPage orderId={order.id} />);
   expect(await screen.findByText("Thank you, Maya.")).toBeInTheDocument();
-  expect(screen.getByText("Cash on delivery")).toBeInTheDocument();
+  expect(screen.getByText("Order VB-7K2M9Q")).toBeInTheDocument();
 });
 
-test("card details are never stored with the order", async () => {
+test("only cash on delivery can be chosen until a payment provider is connected", async () => {
   seedBag();
   withProviders(<CheckoutPage />);
   await screen.findByText("Your information");
-  type("Email", "maya@example.com");
-  type("First name", "Maya");
-  type("Last name", "Chaker");
-  type("Phone", "+961 3 123 456");
-  fireEvent.click(screen.getByRole("button", { name: /continue to delivery/i }));
-  type("City / area", "Beirut");
-  type("Street", "Rue Gouraud");
-  type("Building", "14");
-  fireEvent.click(screen.getByRole("button", { name: /continue to payment/i }));
-  type("Card number", "4242 4242 4242 4242");
-  // The card fields have no name, so they are never part of the submitted form.
-  expect(screen.getByLabelText("Card number")).not.toHaveAttribute("name");
-  fireEvent.click(screen.getByRole("button", { name: /^pay/i }));
+  fillToPayment();
+  expect(screen.getByLabelText(/cash on delivery/i)).toBeChecked();
+  for (const method of [/credit or debit card/i, /apple pay/i, /whish money/i]) {
+    expect(screen.getByLabelText(method)).toBeDisabled();
+  }
+  expect(screen.getAllByText("Coming soon")).toHaveLength(3);
+});
 
-  await waitFor(() => expect(router.replace).toHaveBeenCalled());
-  expect(window.localStorage.getItem("velouraBeauty.orders.v1")).not.toContain("4242");
+test("a refusal from the server is shown and the bag is kept", async () => {
+  seedBag();
+  mockOrderApi(409, { error: "Double Wear Stay-in-Place Foundation has just sold out." });
+  withProviders(<CheckoutPage />);
+  await screen.findByText("Your information");
+  fillToPayment();
+  fireEvent.click(screen.getByRole("button", { name: /^place order/i }));
+
+  expect(await screen.findByRole("alert")).toHaveTextContent("has just sold out.");
+  expect(router.replace).not.toHaveBeenCalled();
+  expect(stored("velouraBeauty.cart.v2")).toHaveLength(1);
 });
 
 test("contact details are validated by the browser before continuing", async () => {

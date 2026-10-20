@@ -29,7 +29,7 @@ export default function OrdersPage() {
               <li key={order.id} className={styles.order}>
                 <div>
                   <p className={styles.orderTop}>
-                    <span>{order.id}</span>
+                    <span>{order.reference ?? order.id}</span>
                     <span>{money(order.total)}</span>
                   </p>
                   <p className={styles.orderMeta}>

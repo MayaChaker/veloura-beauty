@@ -6,6 +6,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { brandSlug } from "../src/domain/catalogue/catalogue";
 import { PRODUCTS } from "../src/data/products";
+import { DEFAULT_STOCK } from "../src/domain/commerce/commerceConfig";
 
 const db = new PrismaClient({
   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
@@ -60,7 +61,7 @@ async function main() {
       packaging: product.type === "set" ? null : product.packaging,
       color: product.color,
       includes: product.type === "set" ? product.includes : [],
-      stock: product.variants?.length ? null : (product.stock ?? null),
+      stock: product.variants?.length ? null : (product.stock ?? DEFAULT_STOCK),
       image: product.image ?? null,
       gallery: product.gallery ?? [],
       position,

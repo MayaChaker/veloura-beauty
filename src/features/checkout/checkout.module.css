@@ -278,7 +278,7 @@
   margin: 0;
 }
 
-/* Payment methods: one list; the chosen card opens its fields. */
+/* Payment methods: one list; methods without a provider yet are shown, but muted. */
 .methods {
   margin: 0;
   padding: 0;
@@ -307,11 +307,9 @@
 .method[data-chosen="true"] {
   background: color-mix(in srgb, var(--color-bone) 45%, var(--color-white));
 }
-.cardFields {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
-  padding: 0 var(--space-4) var(--space-5);
+.method[data-available="false"] > label {
+  color: var(--color-taupe);
+  cursor: not-allowed;
 }
 
 /* Location picker. */
