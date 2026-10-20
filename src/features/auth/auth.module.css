@@ -1,0 +1,28 @@
+.page {
+  display: grid;
+  gap: var(--space-6);
+  width: 100%;
+  max-width: 420px;
+  min-height: 60vh;
+  margin: 0 auto;
+  padding: var(--section-space) var(--gutter);
+  align-content: start;
+}
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+.error {
+  color: var(--color-error);
+  font-size: var(--text-small);
+}
+.switch {
+  color: var(--color-taupe);
+  font-size: var(--text-small);
+}
+.switch a {
+  color: var(--color-umber);
+  font-weight: var(--weight-medium);
+  text-underline-offset: 4px;
+  text-decoration-color: var(--color-sand);
+}

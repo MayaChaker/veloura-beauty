@@ -106,32 +106,36 @@ enum PaymentMethod {
 /// shopper's details never rewrite past orders.
 model Order {
   /// Random and unguessable: the confirmation page is reached by this id alone.
-  id             String        @id @default(cuid())
+  id            String        @id @default(cuid())
   /// Short reference shown to the shopper and the care team, e.g. "VB-7K2M9Q".
-  reference      String        @unique
-  status         OrderStatus   @default(Placed)
-  paymentMethod  PaymentMethod
-  email          String
-  firstName      String
-  lastName       String
-  phone          String
-  area           String
-  street         String
-  building       String
-  floor          String
-  directions     String
-  country        String
-  latitude       Float?
-  longitude      Float?
-  promoCode      String?
-  subtotalCents  Int
-  discountCents  Int
-  shippingCents  Int
-  totalCents     Int
-  items          OrderItem[]
-  createdAt      DateTime      @default(now())
+  reference     String        @unique
+  status        OrderStatus   @default(Placed)
+  paymentMethod PaymentMethod
+  email         String
+  firstName     String
+  lastName      String
+  phone         String
+  area          String
+  street        String
+  building      String
+  floor         String
+  directions    String
+  country       String
+  latitude      Float?
+  longitude     Float?
+  promoCode     String?
+  subtotalCents Int
+  discountCents Int
+  shippingCents Int
+  totalCents    Int
+  items         OrderItem[]
+  /// The account that placed it, when the shopper was signed in.
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId        String?
+  createdAt     DateTime      @default(now())
 
   @@index([email])
+  @@index([userId])
   @@index([createdAt])
 }
 
@@ -150,4 +154,67 @@ model OrderItem {
   quantity       Int
 
   @@index([orderId])
+}
+
+// Accounts: the four tables Better Auth needs (src/lib/auth.ts). Passwords are never stored
+// as typed: Account.password holds a salted hash.
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  sessions      Session[]
+  accounts      Account[]
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+/// A signed-in browser. The token lives in an httpOnly cookie; deleting the row signs it out.
+model Session {
+  id        String   @id
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+/// How a user signs in: providerId "credential" is email and password.
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+/// Short-lived tokens, e.g. for email verification or password reset.
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
 }

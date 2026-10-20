@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { router } from "../../test/navigation";
 import CheckoutPage from "./CheckoutPage";
 import { TestProviders } from "../../test/catalogue";
+import { useSession } from "../../lib/authClient";
 
 const withProviders = (ui: ReactElement) => render(<TestProviders>{ui}</TestProviders>);
 const stored = (key: string) => JSON.parse(window.localStorage.getItem(key) ?? "null");
@@ -115,4 +116,18 @@ test("contact details are validated by the browser before continuing", async () 
 test("an empty bag is sent back to the shop only after saved state has loaded", async () => {
   withProviders(<CheckoutPage />);
   await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/shop"));
+});
+
+test("a signed-in shopper's name and email are filled in", async () => {
+  (useSession as jest.Mock).mockReturnValue({
+    data: { user: { id: "u1", name: "Maya Chaker", email: "maya@example.com" } },
+    isPending: false,
+  });
+  seedBag();
+  withProviders(<CheckoutPage />);
+  await screen.findByText("Your information");
+  expect(screen.getByLabelText("Email")).toHaveValue("maya@example.com");
+  expect(screen.getByLabelText("First name")).toHaveValue("Maya");
+  expect(screen.getByLabelText("Last name")).toHaveValue("Chaker");
+  (useSession as jest.Mock).mockReturnValue({ data: null, isPending: false });
 });

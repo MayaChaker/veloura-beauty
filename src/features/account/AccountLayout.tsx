@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Breadcrumb from "../../components/ui/Breadcrumb";
 import SideNavLayout from "../../components/layout/SideNavLayout";
+import AccountStatus from "../auth/AccountStatus";
 import styles from "./account.module.css";
 
 const ACCOUNT_LINKS = [
@@ -17,7 +18,7 @@ interface AccountLayoutProps {
   children: ReactNode;
 }
 
-/** The pages saved in this browser (there is no online account), behind one menu. */
+/** The account pages behind one menu, with who is signed in under it. */
 export default function AccountLayout({ title, current, intro, children }: AccountLayoutProps) {
   return (
     <main className={styles.page}>
@@ -26,7 +27,7 @@ export default function AccountLayout({ title, current, intro, children }: Accou
         label="Your Veloura"
         links={ACCOUNT_LINKS}
         current={current}
-        note="Saved in this browser. No account or password needed."
+        note={<AccountStatus />}
       >
         <header className={styles.head}>
           <h1 className="text-h3">{title}</h1>

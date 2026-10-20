@@ -11,5 +11,6 @@ module.exports = createJestConfig({
     "^server-only$": "<rootDir>/src/test/serverOnly.js",
     "/server/catalogue$": "<rootDir>/src/test/serverCatalogue.ts",
     "/server/orders/getOrder$": "<rootDir>/src/test/serverOrders.ts",
+    "/lib/authClient$": "<rootDir>/src/test/authClient.ts",
   },
 });
