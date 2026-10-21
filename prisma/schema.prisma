@@ -28,10 +28,10 @@ model Brand {
 
 model Product {
   /// Kept from the catalogue files: bags saved in shoppers' browsers refer to these ids.
-  id                 Int       @id
-  slug               String    @unique
+  id                 Int            @id
+  slug               String         @unique
   name               String
-  brand              Brand     @relation(fields: [brandId], references: [id])
+  brand              Brand          @relation(fields: [brandId], references: [id])
   brandId            Int
   category           Category
   /// Slug from src/data/subcategories.ts, e.g. "lips".
@@ -40,8 +40,8 @@ model Product {
   originalPriceCents Int?
   size               String
   badge              String?
-  isNew              Boolean   @default(false)
-  isBestseller       Boolean   @default(false)
+  isNew              Boolean        @default(false)
+  isBestseller       Boolean        @default(false)
   note               String
   description        String
   ingredients        String
@@ -57,16 +57,17 @@ model Product {
   packaging          String?
   color              String
   /// For sets: the ids of the products inside.
-  includes           Int[]     @default([])
+  includes           Int[]          @default([])
   /// Null when the product has shades: each shade then has its own stock.
   stock              Int?
   image              String?
-  gallery            String[]  @default([])
+  gallery            String[]       @default([])
   /// Order in which products are listed when no sort is chosen.
-  position           Int       @default(0)
+  position           Int            @default(0)
   variants           Variant[]
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
+  savedBy            WishlistItem[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   @@index([category])
   @@index([brandId])
@@ -160,16 +161,18 @@ model OrderItem {
 // as typed: Account.password holds a salted hash.
 
 model User {
-  id            String    @id
+  id            String         @id
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String         @unique
+  emailVerified Boolean        @default(false)
   image         String?
   sessions      Session[]
   accounts      Account[]
   orders        Order[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  wishlist      WishlistItem[]
+  beautyProfile BeautyProfile?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 /// A signed-in browser. The token lives in an httpOnly cookie; deleting the row signs it out.
@@ -217,4 +220,25 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@index([identifier])
+}
+
+/// A product a user saved with the heart. One row per user and product.
+model WishlistItem {
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  createdAt DateTime @default(now())
+
+  @@id([userId, productId])
+}
+
+/// A user's skin type and preferences (one per user).
+model BeautyProfile {
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String   @id
+  skinType    String   @default("")
+  skinGoals   String[] @default([])
+  preferences String[] @default([])
+  updatedAt   DateTime @updatedAt
 }

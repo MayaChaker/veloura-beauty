@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from "react";
 import { resolveCart } from "../domain/cart/cart";
 import {
   addCartItem,
@@ -9,7 +9,9 @@ import {
 import { calculateTotals, findPromotion, normalizePromoCode } from "../domain/cart/pricing";
 import type { SelectionInput } from "../domain/product/productSelection";
 import { toggleWishlistItem } from "../domain/wishlist/wishlist";
+import { useSession } from "../lib/authClient";
 import { STORAGE_KEYS } from "../repositories/storageRepository";
+import { setWishlistItem, syncWishlist } from "../server/accountActions";
 import type { CartLine, ProductId, Totals } from "../types/commerce";
 import { useCatalogue } from "./useCatalogue";
 import { usePersistentState } from "./usePersistentState";
@@ -41,7 +43,34 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
   const catalogue = useCatalogue();
   const [cart, setCart, hydrated] = usePersistentState<CartEntry[]>(STORAGE_KEYS.cart, []);
   const [promoCode, setPromoCode] = usePersistentState(STORAGE_KEYS.promo, "");
-  const [wishlist, setWishlist] = usePersistentState<ProductId[]>(STORAGE_KEYS.wishlist, []);
+  const [wishlist, setWishlist, wishlistLoaded] = usePersistentState<ProductId[]>(
+    STORAGE_KEYS.wishlist,
+    [],
+  );
+  const userId = useSession().data?.user.id ?? null;
+
+  // Latest values for the actions below, which stay stable across renders.
+  const latest = useRef({ wishlist, userId });
+  useEffect(() => {
+    latest.current = { wishlist, userId };
+  });
+
+  // Signing in adds what was saved as a guest to the account's wishlist, then shows the
+  // account's, so the hearts match on every device. A guest's wishlist stays in this browser.
+  useEffect(() => {
+    if (!userId || !wishlistLoaded) return;
+    let current = true;
+    syncWishlist(latest.current.wishlist)
+      .then((ids) => {
+        if (current && ids) setWishlist(ids);
+      })
+      .catch(() => {
+        // Offline or signed out meanwhile: the browser's wishlist still works.
+      });
+    return () => {
+      current = false;
+    };
+  }, [userId, wishlistLoaded, setWishlist]);
 
   // Actions only depend on state setters and the catalogue, which the server sends once per
   // page, so their identity is stable and components can list them as effect dependencies.
@@ -62,7 +91,11 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
         return valid;
       },
       removePromoCode: () => setPromoCode(""),
-      toggleWishlist: (id) => setWishlist((items) => toggleWishlistItem(items, id)),
+      toggleWishlist: (id) => {
+        const saved = !latest.current.wishlist.includes(id);
+        setWishlist((items) => toggleWishlistItem(items, id));
+        if (latest.current.userId) setWishlistItem(id, saved).catch(() => {});
+      },
     }),
     [catalogue, setCart, setPromoCode, setWishlist],
   );

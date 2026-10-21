@@ -59,11 +59,18 @@ export function ProfileSummary() {
         <h2 id="overview-profile">Beauty profile</h2>
         <Link href="/profile">Edit</Link>
       </div>
-      <ul className={styles.chips}>
-        {choices.map((choice) => (
-          <li key={choice}>{choice}</li>
-        ))}
-      </ul>
+      {choices.length ? (
+        <ul className={styles.chips}>
+          {choices.map((choice) => (
+            <li key={choice}>{choice}</li>
+          ))}
+        </ul>
+      ) : (
+        <p className={shell.empty}>
+          Tell us about your skin and the textures you like.{" "}
+          <Link href="/profile">Fill in your profile</Link>
+        </p>
+      )}
     </section>
   );
 }

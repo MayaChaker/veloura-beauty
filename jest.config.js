@@ -12,6 +12,7 @@ module.exports = createJestConfig({
     "/server/catalogue$": "<rootDir>/src/test/serverCatalogue.ts",
     "/server/orders/getOrder$": "<rootDir>/src/test/serverOrders.ts",
     "/lib/authClient$": "<rootDir>/src/test/authClient.ts",
+    "/server/accountActions$": "<rootDir>/src/test/accountActions.ts",
     "/server/(session|account|orders/getUserOrders)$": "<rootDir>/src/test/serverAccount.ts",
   },
 });
