@@ -4,14 +4,25 @@ import { sendOrderConfirmation } from "../../../server/email/sendOrderConfirmati
 import { orderInputSchema } from "../../../server/orders/orderInput";
 import { placeOrder } from "../../../server/orders/placeOrder";
 import { OrderError } from "../../../server/orders/priceOrder";
+import { ORDER_LIMIT, clientIp, hit } from "../../../server/rateLimit";
 
 /**
  * POST /api/orders: places an order.
  * 201 { id, reference, placedAt, totalCents }, then the confirmation email is sent ·
  * 400 invalid input · 404 product gone ·
- * 409 out of stock · 500 anything else (details are logged, never sent).
+ * 409 out of stock · 429 too many orders from this visitor ·
+ * 500 anything else (details are logged, never sent).
  */
 export async function POST(request: Request) {
+  // Checked first, before any work: a script sending orders in a loop is stopped here.
+  const limit = await hit(`orders|${clientIp(request.headers)}`, ORDER_LIMIT);
+  if (!limit.ok) {
+    return Response.json(
+      { error: "Too many orders in a short time. Please wait a few minutes and try again." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterSeconds) } },
+    );
+  }
+
   let body: unknown;
   try {
     body = await request.json();

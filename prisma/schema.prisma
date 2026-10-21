@@ -229,6 +229,23 @@ model Verification {
   @@index([identifier])
 }
 
+/// Better Auth's request counts for sign-in and sign-up, per IP address and path. Kept in the
+/// database, not in memory, so every server instance counts against the same limit.
+model RateLimit {
+  id          String @id
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
+
+/// Request counts for the store's own limits, e.g. "orders|203.0.113.7": one row per key,
+/// counting requests since `startedAt` (a fixed window).
+model RateLimitWindow {
+  key       String   @id
+  startedAt DateTime
+  count     Int
+}
+
 /// A product a user saved with the heart. One row per user and product.
 model WishlistItem {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

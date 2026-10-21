@@ -39,6 +39,18 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 30, // 30 days
     updateAge: 60 * 60 * 24, // extended at most once a day while in use
   },
+  // Counted in the database (the RateLimit table), not in memory: Vercel runs several copies of
+  // the server, and each would otherwise keep its own count. Password guessing is the main
+  // target, so signing in and up get far tighter limits than the default.
+  rateLimit: {
+    storage: "database",
+    window: 60,
+    max: 100,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60 * 60, max: 5 },
+    },
+  },
   // Must stay last: lets server actions set the session cookie.
   plugins: [nextCookies()],
 });

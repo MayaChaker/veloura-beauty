@@ -87,9 +87,11 @@ export default function AuthForm({ mode, google }: AuthFormProps) {
     if (failure) {
       // One message for a wrong email or password: never reveal which accounts exist.
       setError(
-        mode === "sign-in"
-          ? "The email or password is incorrect."
-          : (failure.message ?? "The account could not be created."),
+        failure.status === 429
+          ? "Too many attempts. Please wait a minute and try again."
+          : mode === "sign-in"
+            ? "The email or password is incorrect."
+            : (failure.message ?? "The account could not be created."),
       );
       setBusy(false);
       return;
