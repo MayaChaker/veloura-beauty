@@ -101,6 +101,9 @@ export default function Overview({ data }: { data: Dashboard }) {
         <section className={styles.box} aria-labelledby="low-stock">
           <header className={styles.boxHead}>
             <h2 id="low-stock">Low stock</h2>
+            <Link href="/admin/products?tab=low-stock" className={styles.more}>
+              Products
+            </Link>
           </header>
           {data.lowStock.length ? (
             <ul className={styles.stock}>
@@ -112,7 +115,7 @@ export default function Overview({ data }: { data: Dashboard }) {
                     )}
                   </span>
                   <p>
-                    <Link href={`/product/${line.slug}`}>{line.name}</Link>
+                    <Link href={`/admin/products/${line.productId}`}>{line.name}</Link>
                     <small>{line.detail}</small>
                   </p>
                   <strong data-out={line.stock === 0 || undefined}>

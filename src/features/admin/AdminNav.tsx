@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HomeOutlined, Inventory2Outlined } from "@mui/icons-material";
+import { HomeOutlined, Inventory2Outlined, LocalOfferOutlined } from "@mui/icons-material";
 import styles from "./admin.module.css";
 
 const LINKS = [
   { href: "/admin", label: "Overview", Icon: HomeOutlined },
   { href: "/admin/orders", label: "Orders", Icon: Inventory2Outlined },
+  { href: "/admin/products", label: "Products", Icon: LocalOfferOutlined },
 ];
 
 /** The overview is current only on /admin itself; every other link also covers its subpages. */

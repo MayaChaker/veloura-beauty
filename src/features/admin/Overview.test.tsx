@@ -32,7 +32,7 @@ const data: Dashboard = {
   lowStock: [
     {
       key: "nars/custard",
-      slug: "nars",
+      productId: 11,
       name: "Radiant Creamy Concealer",
       detail: "NARS · Custard",
       image: null,
