@@ -2,6 +2,8 @@
  * The real requireUser, with Better Auth and Next's headers replaced: Jest maps the module
  * path to a stub for page tests, so this test loads the file directly.
  */
+export {}; // a module, so its names do not clash with other test files
+
 jest.mock("next/headers", () => ({ headers: async () => new Headers() }));
 const getSession = jest.fn();
 jest.mock("../lib/auth", () => ({ auth: { api: { getSession } } }));
