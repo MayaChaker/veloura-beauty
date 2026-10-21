@@ -66,7 +66,7 @@ function bestSellers(firstDay: string, since: Date) {
 
 export interface LowStockLine {
   key: string;
-  slug: string;
+  productId: number;
   name: string;
   detail: string;
   image: string | null;
@@ -81,6 +81,7 @@ async function lowStock(): Promise<LowStockLine[]> {
       orderBy: { stock: "asc" },
       take: 6,
       select: {
+        id: true,
         slug: true,
         name: true,
         image: true,
@@ -98,7 +99,13 @@ async function lowStock(): Promise<LowStockLine[]> {
         image: true,
         stock: true,
         product: {
-          select: { slug: true, name: true, image: true, brand: { select: { name: true } } },
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            image: true,
+            brand: { select: { name: true } },
+          },
         },
       },
     }),
@@ -106,7 +113,7 @@ async function lowStock(): Promise<LowStockLine[]> {
   return [
     ...products.map((product) => ({
       key: product.slug,
-      slug: product.slug,
+      productId: product.id,
       name: product.name,
       detail: product.brand.name,
       image: product.image,
@@ -114,7 +121,7 @@ async function lowStock(): Promise<LowStockLine[]> {
     })),
     ...variants.map((variant) => ({
       key: `${variant.product.slug}/${variant.key}`,
-      slug: variant.product.slug,
+      productId: variant.product.id,
       name: variant.product.name,
       detail: `${variant.product.brand.name} · ${variant.name}`,
       image: variant.image ?? variant.product.image,
