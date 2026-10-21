@@ -34,6 +34,21 @@ test("a failed sign-in never says whether the email exists", async () => {
   expect(router.push).not.toHaveBeenCalled();
 });
 
+test("too many attempts are explained, not reported as a wrong password", async () => {
+  signInMock.mockResolvedValueOnce({
+    data: null,
+    error: { status: 429, message: "Too many requests" },
+  });
+  render(<AuthForm mode="sign-in" google />);
+  type("Email", "maya@example.com");
+  type("Password", "a-long-password");
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Too many attempts. Please wait a minute",
+  );
+});
+
 test("creating an account asks for a name and a password of at least 8 characters", async () => {
   signUpMock.mockResolvedValueOnce({ data: {}, error: null });
   setLocation("/sign-up?next=/orders");
