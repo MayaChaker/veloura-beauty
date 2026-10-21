@@ -20,6 +20,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "make-admin": "tsx prisma/make-admin.ts",
     "vercel-build": "prisma migrate deploy && prisma db seed && next build"
   },
   "dependencies": {
