@@ -5,16 +5,16 @@ import ProductGrid, { ProductGridItem } from "../../components/ui/ProductGrid";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
 import { useCatalogue } from "../../hooks/useCatalogue";
 import { useCommerce } from "../../hooks/useCommerce";
-import AccountLayout from "../account/AccountLayout";
 import styles from "../account/account.module.css";
 import ProductCard from "../products/ProductCard";
 
-export default function WishlistPage() {
+/** The saved products as a grid, or how to save some. */
+export default function WishlistGrid() {
   const { openCart } = useCartDrawer();
   const { wishlist } = useCommerce();
   const products = useCatalogue().products.filter((p) => wishlist.includes(p.id));
   return (
-    <AccountLayout title="Wishlist" current="/wishlist">
+    <>
       {products.length ? (
         <ProductGrid maxColumns={3}>
           {products.map((p) => (
@@ -29,6 +29,6 @@ export default function WishlistPage() {
           <Button href="/shop">Shop all products</Button>
         </div>
       )}
-    </AccountLayout>
+    </>
   );
 }

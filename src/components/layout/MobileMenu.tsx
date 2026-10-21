@@ -57,7 +57,7 @@ export default function MobileMenu({ open, onClose }: MobileMenuProps) {
         </ul>
         <ul className={styles.account}>
           <li>
-            <Link href="/profile" onClick={onClose}>
+            <Link href="/account" onClick={onClose}>
               Account
             </Link>
           </li>

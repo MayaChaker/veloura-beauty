@@ -14,7 +14,7 @@ type Mode = "sign-in" | "sign-up";
 
 /** Only paths on this site, so a crafted ?next= cannot send the shopper elsewhere. */
 const safeNext = (next: string | null) =>
-  next && next.startsWith("/") && !next.startsWith("//") ? next : "/profile";
+  next && next.startsWith("/") && !next.startsWith("//") ? next : "/account";
 
 const COPY: Record<Mode, { title: string; intro: string; submit: string; busy: string }> = {
   "sign-in": {
@@ -57,7 +57,7 @@ export default function AuthForm({ mode, google }: AuthFormProps) {
   const [busy, setBusy] = useState(false);
   const copy = COPY[mode];
   const other: Mode = mode === "sign-in" ? "sign-up" : "sign-in";
-  const otherHref = `/${other}${next !== "/profile" ? `?next=${encodeURIComponent(next)}` : ""}`;
+  const otherHref = `/${other}${next !== "/account" ? `?next=${encodeURIComponent(next)}` : ""}`;
 
   const field = (key: keyof typeof form) => ({
     value: form[key],

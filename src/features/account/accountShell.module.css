@@ -1,0 +1,103 @@
+.page {
+  max-width: var(--container-max);
+  min-height: 60vh;
+  margin: 0 auto;
+  padding: var(--space-6) var(--gutter) var(--section-space);
+}
+.me {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-umber);
+  color: var(--color-white);
+  font: var(--weight-regular) 1.2rem / 1 var(--font-display);
+}
+.me p strong {
+  display: block;
+  overflow: hidden;
+  font-weight: var(--weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.me p span {
+  display: block;
+  overflow: hidden;
+  color: var(--color-taupe);
+  font-size: var(--text-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.signOut {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-taupe);
+  font-size: var(--text-small);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.signOut:hover {
+  color: var(--color-umber);
+}
+.head {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-7);
+}
+.intro {
+  color: var(--color-taupe);
+}
+
+/* Boxes on the overview. */
+.boxes {
+  display: grid;
+  gap: var(--space-5);
+}
+.box {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  min-width: 0;
+  padding: var(--space-6);
+  border: var(--border);
+  background: var(--color-paper);
+}
+.boxHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+}
+.boxHead h2 {
+  font-size: var(--text-h4);
+  font-weight: var(--weight-light);
+}
+.boxHead a,
+.empty a {
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
+  text-underline-offset: 4px;
+  text-decoration-color: var(--color-sand);
+}
+.empty {
+  color: var(--color-taupe);
+  font-size: var(--text-small);
+}
+
+@media (min-width: 900px) {
+  .boxes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wide {
+    grid-column: 1 / -1;
+  }
+}

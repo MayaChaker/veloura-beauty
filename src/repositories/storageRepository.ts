@@ -4,7 +4,6 @@ export const STORAGE_KEYS = Object.freeze({
   cart: "cart.v2",
   promo: "promoCode.v1",
   wishlist: "wishlist.v1",
-  orders: "orders.v1",
   profile: "beautyProfile.v1",
   recent: "recentlyViewed.v1",
 });

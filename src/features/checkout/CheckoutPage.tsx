@@ -29,7 +29,7 @@ const emptyShipping: ShippingAddress = {
 /** Checkout in three steps, one screen each: information, delivery, payment. */
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, hydrated, totals, promoCode, addOrder, clearCart } = useCommerce();
+  const { cart, hydrated, totals, promoCode, clearCart } = useCommerce();
   const [step, setStep] = useState(1);
   const [contact, setContact] = useState(emptyContact);
   const { data: session } = useSession();
@@ -86,7 +86,6 @@ export default function CheckoutPage() {
         promoCode,
         total: totals.total,
       });
-      addOrder(order);
       setPlaced(true);
       router.replace(`/checkout/confirmation/${order.id}`);
       clearCart();

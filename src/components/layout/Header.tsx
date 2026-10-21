@@ -51,7 +51,7 @@ export default function Header() {
               <SearchBar />
             </div>
             <Link
-              href="/profile"
+              href="/account"
               className={`${styles.icon} ${styles.desktopOnly}`}
               aria-label="Account"
             >

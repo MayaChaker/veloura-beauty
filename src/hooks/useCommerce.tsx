@@ -10,7 +10,7 @@ import { calculateTotals, findPromotion, normalizePromoCode } from "../domain/ca
 import type { SelectionInput } from "../domain/product/productSelection";
 import { toggleWishlistItem } from "../domain/wishlist/wishlist";
 import { STORAGE_KEYS } from "../repositories/storageRepository";
-import type { CartLine, Order, ProductId, Totals } from "../types/commerce";
+import type { CartLine, ProductId, Totals } from "../types/commerce";
 import { useCatalogue } from "./useCatalogue";
 import { usePersistentState } from "./usePersistentState";
 
@@ -24,7 +24,6 @@ export interface CommerceActions {
   applyPromoCode: (code: string) => boolean;
   removePromoCode: () => void;
   toggleWishlist: (id: ProductId) => void;
-  addOrder: (order: Order) => void;
 }
 
 export interface CommerceState extends CommerceActions {
@@ -34,7 +33,6 @@ export interface CommerceState extends CommerceActions {
   promoCode: string;
   totals: Totals;
   wishlist: ProductId[];
-  orders: Order[];
 }
 
 const CommerceContext = createContext<CommerceState | null>(null);
@@ -44,7 +42,6 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
   const [cart, setCart, hydrated] = usePersistentState<CartEntry[]>(STORAGE_KEYS.cart, []);
   const [promoCode, setPromoCode] = usePersistentState(STORAGE_KEYS.promo, "");
   const [wishlist, setWishlist] = usePersistentState<ProductId[]>(STORAGE_KEYS.wishlist, []);
-  const [orders, setOrders] = usePersistentState<Order[]>(STORAGE_KEYS.orders, []);
 
   // Actions only depend on state setters and the catalogue, which the server sends once per
   // page, so their identity is stable and components can list them as effect dependencies.
@@ -66,9 +63,8 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
       },
       removePromoCode: () => setPromoCode(""),
       toggleWishlist: (id) => setWishlist((items) => toggleWishlistItem(items, id)),
-      addOrder: (order) => setOrders((items) => [order, ...items]),
     }),
-    [catalogue, setCart, setOrders, setPromoCode, setWishlist],
+    [catalogue, setCart, setPromoCode, setWishlist],
   );
 
   const canonicalCart = useMemo(() => resolveCart(catalogue, cart), [catalogue, cart]);
@@ -77,8 +73,8 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
     [canonicalCart, promoCode],
   );
   const value = useMemo<CommerceState>(
-    () => ({ cart: canonicalCart, hydrated, promoCode, totals, wishlist, orders, ...actions }),
-    [actions, canonicalCart, hydrated, orders, promoCode, totals, wishlist],
+    () => ({ cart: canonicalCart, hydrated, promoCode, totals, wishlist, ...actions }),
+    [actions, canonicalCart, hydrated, promoCode, totals, wishlist],
   );
   return <CommerceContext.Provider value={value}>{children}</CommerceContext.Provider>;
 }
