@@ -21,6 +21,17 @@ export const stepsDone = (status: OrderStatus) => ORDER_STEPS.indexOf(status) + 
 
 export const isOpen = (status: OrderStatus) => status === "Placed" || status === "Shipped";
 
+/** "21 Oct, 22:14" in Beirut time, wherever the server runs (Vercel's clock is UTC). */
+export const formatOrderTime = (iso: string) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone: "Asia/Beirut",
+  }).format(new Date(iso));
+
 export const formatOrderDate = (iso: string) =>
   new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(
     new Date(iso),

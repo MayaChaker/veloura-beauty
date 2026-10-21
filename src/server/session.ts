@@ -1,4 +1,6 @@
 import "server-only";
+import type { Metadata } from "next";
+import { cache } from "react";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "../lib/auth";
@@ -10,13 +12,16 @@ export interface AccountUser {
   email: string;
 }
 
-/** The signed-in shopper, read from the session cookie; null for a guest. */
-export async function getCurrentUser(): Promise<AccountUser | null> {
+/**
+ * The signed-in shopper, read from the session cookie; null for a guest. cache() reads it once
+ * per request, however many layouts, pages and metadata ask.
+ */
+export const getCurrentUser = cache(async (): Promise<AccountUser | null> => {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return null;
   const { id, name, email } = session.user;
   return { id, name, email };
-}
+});
 
 /**
  * The signed-in shopper, or a redirect to sign in that comes back to `path` afterwards.
@@ -38,10 +43,17 @@ export async function getAdmin(): Promise<AccountUser | null> {
   return user && (await isAdmin(user.id)) ? user : null;
 }
 
-async function isAdmin(userId: string) {
+const isAdmin = cache(async (userId: string) => {
   const record = await db.user.findUnique({ where: { id: userId }, select: { role: true } });
   return record?.role === "Admin";
-}
+});
+
+/**
+ * generateMetadata for an admin page. Metadata is resolved even when the page then 404s, so a
+ * fixed title would tell a customer the page exists: they get the 404's title instead.
+ */
+export const adminTitle = (title: string) => async (): Promise<Metadata> =>
+  (await getAdmin()) ? { title } : { title: "Page not found" };
 
 /**
  * Admin pages call this first. A guest is sent to sign in; a signed-in customer gets the
