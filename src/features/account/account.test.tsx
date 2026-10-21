@@ -20,13 +20,13 @@ test("customer care lists every topic and opens the first question", () => {
   expect(screen.getByText("Timing").closest("details")).not.toHaveAttribute("open");
 });
 
-test("the beauty profile keeps one skin type and saves to the browser", () => {
+test("the beauty profile keeps one skin type and saves it", () => {
   withProviders(<ProfileForm />);
   fireEvent.click(screen.getByRole("button", { name: "Oily" }));
   expect(screen.getByRole("button", { name: "Oily" })).toHaveAttribute("aria-pressed", "true");
   expect(screen.getByRole("button", { name: "Balanced" })).toHaveAttribute("aria-pressed", "false");
 
   fireEvent.click(screen.getByRole("button", { name: "Save profile" }));
-  expect(screen.getByRole("status")).toHaveTextContent("Saved in this browser.");
+  expect(screen.getByRole("status")).toHaveTextContent("Saved.");
   expect(stored("velouraBeauty.beautyProfile.v1")).toMatchObject({ skinType: "Oily" });
 });

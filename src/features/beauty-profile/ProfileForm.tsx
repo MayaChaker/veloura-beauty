@@ -5,16 +5,12 @@ import { useCustomer } from "../../hooks/useCustomer";
 import Button from "../../components/ui/Button";
 import type { BeautyProfile } from "../../types/customer";
 import styles from "../account/account.module.css";
+import {
+  SKIN_CONCERNS,
+  SKIN_TYPES,
+  TEXTURE_PREFERENCES,
+} from "../../domain/customer/beautyProfile";
 import ChoiceGroup from "./ChoiceGroup";
-
-const SKIN_TYPES = ["Balanced", "Dry", "Combination", "Oily", "Sensitive"];
-const CONCERNS = ["Dehydration", "Dullness", "Sensitive skin", "Fine lines"];
-const PREFERENCES = [
-  "Natural coverage",
-  "Fragrance-free feel",
-  "Weightless textures",
-  "Rich textures",
-];
 
 /** Edits a draft of the profile and saves it to the browser on demand. */
 export default function ProfileForm() {
@@ -45,27 +41,27 @@ export default function ProfileForm() {
       <ChoiceGroup
         legend="Skin type"
         hint="The one that fits most days."
-        values={SKIN_TYPES}
+        values={[...SKIN_TYPES]}
         selected={[draft.skinType]}
         onToggle={(value) => update({ ...draft, skinType: value })}
       />
       <ChoiceGroup
         legend="Skin concerns"
         hint="Choose as many as you like."
-        values={CONCERNS}
+        values={[...SKIN_CONCERNS]}
         selected={draft.skinGoals || []}
         onToggle={(value) => toggle("skinGoals", value)}
       />
       <ChoiceGroup
         legend="Texture and finish"
         hint="How you like products to feel."
-        values={PREFERENCES}
+        values={[...TEXTURE_PREFERENCES]}
         selected={draft.preferences || []}
         onToggle={(value) => toggle("preferences", value)}
       />
       <div className={styles.save}>
         <Button onClick={save}>Save profile</Button>
-        <p role="status">{saved ? "Saved in this browser." : ""}</p>
+        <p role="status">{saved ? "Saved." : ""}</p>
       </div>
     </section>
   );
