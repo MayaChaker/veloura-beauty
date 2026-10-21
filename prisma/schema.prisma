@@ -160,12 +160,19 @@ model OrderItem {
 // Accounts: the four tables Better Auth needs (src/lib/auth.ts). Passwords are never stored
 // as typed: Account.password holds a salted hash.
 
+enum Role {
+  Customer
+  Admin
+}
+
 model User {
   id            String         @id
   name          String
   email         String         @unique
   emailVerified Boolean        @default(false)
   image         String?
+  /// Not known to Better Auth, so sign-up cannot set it: an admin is made with `npm run make-admin`.
+  role          Role           @default(Customer)
   sessions      Session[]
   accounts      Account[]
   orders        Order[]
