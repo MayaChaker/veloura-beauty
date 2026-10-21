@@ -53,7 +53,9 @@ const isAdmin = cache(async (userId: string) => {
  * fixed title would tell a customer the page exists: they get the 404's title instead.
  */
 export const adminTitle = (title: string) => async (): Promise<Metadata> =>
-  (await getAdmin()) ? { title } : { title: "Page not found" };
+  (await getAdmin())
+    ? { title: { absolute: `${title} | Veloura Admin` } }
+    : { title: "Page not found" };
 
 /**
  * Admin pages call this first. A guest is sent to sign in; a signed-in customer gets the

@@ -3,13 +3,10 @@ import AdminShell from "../../features/admin/AdminShell";
 import { countToShip } from "../../server/admin/adminOrders";
 import { getAdmin } from "../../server/session";
 
-// Only an admin gets the admin title template: anyone else must see an ordinary 404.
+// Each page sets its own title with adminTitle. Only an admin gets this layout's metadata:
+// anyone else must see an ordinary 404.
 export async function generateMetadata(): Promise<Metadata> {
-  if (!(await getAdmin())) return {};
-  return {
-    title: { default: "Admin", template: "%s | Veloura Admin" },
-    robots: { index: false, follow: false },
-  };
+  return (await getAdmin()) ? { robots: { index: false, follow: false } } : {};
 }
 
 /**

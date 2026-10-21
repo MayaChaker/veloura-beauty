@@ -2,17 +2,24 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Inventory2Outlined } from "@mui/icons-material";
+import { HomeOutlined, Inventory2Outlined } from "@mui/icons-material";
 import styles from "./admin.module.css";
 
-const LINKS = [{ href: "/admin/orders", label: "Orders", Icon: Inventory2Outlined }];
+const LINKS = [
+  { href: "/admin", label: "Overview", Icon: HomeOutlined },
+  { href: "/admin/orders", label: "Orders", Icon: Inventory2Outlined },
+];
+
+/** The overview is current only on /admin itself; every other link also covers its subpages. */
+const isCurrent = (pathname: string, href: string) =>
+  href === "/admin" ? pathname === href : pathname.startsWith(href);
 
 export default function AdminNav({ toShip }: { toShip: number }) {
   const pathname = usePathname();
   return (
     <nav className={styles.nav} aria-label="Admin">
       {LINKS.map(({ href, label, Icon }) => (
-        <Link key={href} href={href} aria-current={pathname.startsWith(href) ? "page" : undefined}>
+        <Link key={href} href={href} aria-current={isCurrent(pathname, href) ? "page" : undefined}>
           <Icon aria-hidden="true" />
           {label}
           {href === "/admin/orders" && toShip > 0 && (
