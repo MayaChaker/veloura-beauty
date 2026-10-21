@@ -1,8 +1,7 @@
-import { paymentLabel } from "../domain/commerce/paymentMethods";
-import type { Order, OrderRequest } from "../types/commerce";
+import type { OrderRequest } from "../types/commerce";
 
 /** What POST /api/orders answers with. */
-interface PlacedOrder {
+export interface PlacedOrder {
   id: string;
   reference: string;
   placedAt: string;
@@ -13,7 +12,7 @@ export const orderService = {
   /**
    * Sends the bag to POST /api/orders. Only product ids, shades and quantities are sent: the
    * server prices the order from the database, takes the items off the stock and saves it.
-   * Returns the order as this browser keeps it for the order history and confirmation page.
+   * Returns the placed order's id (its confirmation page) and reference.
    */
   async create({
     cart,
@@ -21,7 +20,7 @@ export const orderService = {
     shipping,
     paymentMethod,
     promoCode,
-  }: OrderRequest): Promise<Order> {
+  }: OrderRequest): Promise<PlacedOrder> {
     const response = await fetch("/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -48,15 +47,7 @@ export const orderService = {
       id: body.id,
       reference: body.reference,
       placedAt: body.placedAt,
-      status: "Placed",
-      items: cart,
-      contact,
-      shipping,
-      paymentMethod,
-      promoCode,
-      // The server's total, not the browser's: it is the amount the courier collects.
-      total: body.totalCents / 100,
-      payment: paymentLabel(paymentMethod),
+      totalCents: body.totalCents,
     };
   },
 };

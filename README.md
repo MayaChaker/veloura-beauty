@@ -41,7 +41,10 @@ journey: catalogue, brands, search, shades, bag, and a three-step checkout with 
 - **Accounts** with email and password, or Google (Better Auth): passwords are hashed, sessions live in an
   httpOnly cookie, other sites' requests are refused, and orders placed while signed in are linked
   to the account. Guests can still check out.
-- **Account pages**: beauty profile, order history and wishlist share one side menu.
+- **Account area** (signed in only): an overview with the latest order's progress, the order
+  history from the database with status filters, account details, wishlist and beauty profile.
+  The user always comes from the session, never from the URL, so no one can open another
+  account's orders.
 - **Customer care** with a menu of topics and each topic's answers as an accordion.
 - **Accessibility**: keyboard-operable dialogs with focus trapping and focus return, labelled
   controls, a skip link, and reduced-motion support.

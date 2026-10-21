@@ -10,7 +10,7 @@ import { CustomerProvider } from "../hooks/useCustomer";
 import type { Product } from "../types/commerce";
 
 // Client-side state shared by every page: the catalogue the server loaded, then the bag,
-// wishlist, orders, profile and the bag drawer.
+// wishlist, profile and the bag drawer.
 export default function AppProviders({
   products,
   children,

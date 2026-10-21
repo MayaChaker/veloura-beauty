@@ -13,6 +13,8 @@ interface SideNavLayoutProps {
   links: SideNavLink[];
   /** Href of the page being shown. */
   current: string;
+  /** Above the menu, e.g. who is signed in. */
+  header?: ReactNode;
   /** A short line under the menu. */
   note?: ReactNode;
   children: ReactNode;
@@ -23,12 +25,14 @@ export default function SideNavLayout({
   label,
   links,
   current,
+  header,
   note,
   children,
 }: SideNavLayoutProps) {
   return (
     <div className={styles.layout}>
       <aside className={styles.aside}>
+        {header}
         <nav aria-label={label}>
           <ul className={styles.menu}>
             {links.map((link) => (

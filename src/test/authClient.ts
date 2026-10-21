@@ -2,5 +2,6 @@
 export const signIn = { email: jest.fn(), social: jest.fn() };
 export const signUp = { email: jest.fn() };
 export const signOut = jest.fn();
+export const updateUser = jest.fn();
 export const useSession = jest.fn(() => ({ data: null, isPending: false }));
-export const authClient = { signIn, signUp, signOut, useSession };
+export const authClient = { signIn, signUp, signOut, useSession, updateUser };

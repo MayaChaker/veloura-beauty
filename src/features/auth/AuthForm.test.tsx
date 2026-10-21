@@ -16,7 +16,7 @@ test("signing in sends the shopper to their account", async () => {
   type("Password", "a-long-password");
   fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
-  await waitFor(() => expect(router.push).toHaveBeenCalledWith("/profile"));
+  await waitFor(() => expect(router.push).toHaveBeenCalledWith("/account"));
   expect(signInMock).toHaveBeenCalledWith({
     email: "maya@example.com",
     password: "a-long-password",
@@ -59,7 +59,7 @@ test("only paths on this site are followed after signing in", async () => {
   type("Email", "maya@example.com");
   type("Password", "a-long-password");
   fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
-  await waitFor(() => expect(router.push).toHaveBeenCalledWith("/profile"));
+  await waitFor(() => expect(router.push).toHaveBeenCalledWith("/account"));
 });
 
 test("Continue with Google is offered only when it is configured", async () => {

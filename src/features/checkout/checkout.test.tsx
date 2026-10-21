@@ -64,9 +64,9 @@ test("a shopper checks out through the API", async () => {
   expect(sent).toMatchObject({ paymentMethod: "cash", promoCode: "VELOURA10" });
   expect(JSON.stringify(sent)).not.toMatch(/price|total/i);
 
-  const [order] = stored("velouraBeauty.orders.v1");
+  // Orders live on the server now: nothing about them is kept in the browser.
   expect(router.replace).toHaveBeenCalledWith("/checkout/confirmation/cm2x8fq0000demo");
-  expect(order).toMatchObject({ reference: "VB-7K2M9Q", total: 70.1, payment: "Cash on delivery" });
+  expect(window.localStorage.getItem("velouraBeauty.orders.v1")).toBeNull();
   expect(stored("velouraBeauty.cart.v2")).toEqual([]);
 });
 

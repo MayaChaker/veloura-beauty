@@ -171,16 +171,3 @@ export interface OrderRequest {
   promoCode: string;
   total: number;
 }
-
-/** A placed order, as this browser keeps it for the order history and confirmation page. */
-export interface Order extends Omit<OrderRequest, "cart"> {
-  /** The server's unguessable id: the confirmation page's URL. */
-  id: string;
-  /** Short reference shown to the shopper, e.g. "VB-7K2M9Q". Missing on orders placed before the API. */
-  reference?: string;
-  /** ISO 8601 timestamp. */
-  placedAt: string;
-  status: "Placed" | "Confirmed";
-  items: CartLine[];
-  payment: string;
-}
