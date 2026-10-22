@@ -35,3 +35,10 @@ test("a delivered order has nothing left to do", () => {
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
   expect(screen.getByText("Delivered and paid.")).toBeInTheDocument();
 });
+
+test("a server that cannot be reached is reported instead of breaking the page", async () => {
+  update.mockRejectedValueOnce(new Error("Failed to fetch"));
+  render(<OrderActions orderId="o1" status="Placed" totalCents={8100} />);
+  fireEvent.click(screen.getByRole("button", { name: "Mark as shipped" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("could not be updated");
+});

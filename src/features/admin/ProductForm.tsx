@@ -93,19 +93,28 @@ export default function ProductForm({ product }: { product: EditableProduct }) {
         value: parseStock(fields.shades[shade.key] ?? "") ?? 0,
       }));
     startTransition(async () => {
-      const result = await updateProduct({
-        productId: product.id,
-        priceCents,
-        wasPriceCents: wasCents,
-        stock,
-        shades,
-      });
-      setStatus(
-        result.ok
-          ? { ok: true, text: "Saved. The store shows it now." }
-          : { ok: false, text: result.error },
-      );
-      if (result.ok) router.refresh();
+      try {
+        const result = await updateProduct({
+          productId: product.id,
+          priceCents,
+          wasPriceCents: wasCents,
+          stock,
+          shades,
+        });
+        setStatus(
+          result.ok
+            ? { ok: true, text: "Saved. The store shows it now." }
+            : { ok: false, text: result.error },
+        );
+        if (result.ok) router.refresh();
+      } catch {
+        // The server could not be reached, or failed: it logged the details. Nothing was saved,
+        // because the changes are written in one transaction.
+        setStatus({
+          ok: false,
+          text: "The changes could not be saved. Check your connection and try again.",
+        });
+      }
     });
   };
 
