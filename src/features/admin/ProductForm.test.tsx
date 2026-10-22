@@ -75,3 +75,12 @@ test("when an order changed the stock, the admin can reload the numbers", async 
   fireEvent.click(screen.getByRole("button", { name: "Reload the numbers" }));
   expect(router.refresh).toHaveBeenCalled();
 });
+
+test("a save that fails on the way is reported, and the changes stay in the form", async () => {
+  update.mockRejectedValueOnce(new Error("Failed to fetch"));
+  render(<ProductForm product={concealer} />);
+  fireEvent.change(screen.getByLabelText("Ginger in stock"), { target: { value: "30" } });
+  fireEvent.click(save());
+  expect(await screen.findByText(/could not be saved/)).toBeInTheDocument();
+  expect(screen.getByLabelText("Ginger in stock")).toHaveValue("30");
+});

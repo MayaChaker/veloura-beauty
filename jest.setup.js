@@ -5,6 +5,7 @@ jest.mock("next/navigation", () => require("./src/test/navigation").navigationMo
 jest.mock("leaflet", () => require("./src/test/leaflet").leafletMock);
 
 beforeEach(() => {
-  window.localStorage.clear();
+  // Route handler tests run in the Node environment, where there is no window.
+  if (typeof window !== "undefined") window.localStorage.clear();
   resetNavigation();
 });

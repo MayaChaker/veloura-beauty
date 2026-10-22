@@ -1,5 +1,6 @@
 import { after } from "next/server";
 import { auth } from "../../../lib/auth";
+import { logger, newErrorId } from "../../../lib/logger";
 import { sendOrderConfirmation } from "../../../server/email/sendOrderConfirmation";
 import { orderInputSchema } from "../../../server/orders/orderInput";
 import { placeOrder } from "../../../server/orders/placeOrder";
@@ -11,9 +12,27 @@ import { ORDER_LIMIT, clientIp, hit } from "../../../server/rateLimit";
  * 201 { id, reference, placedAt, totalCents }, then the confirmation email is sent ·
  * 400 invalid input · 404 product gone ·
  * 409 out of stock · 429 too many orders from this visitor ·
- * 500 anything else (details are logged, never sent).
+ * 500 anything else, with a reference (the details are logged, never sent).
  */
 export async function POST(request: Request) {
+  try {
+    return await placeFromRequest(request);
+  } catch (error) {
+    // Anything unexpected, from the rate limit to the transaction: the shopper gets a
+    // reference, never the details; the log has both.
+    const errorId = newErrorId();
+    logger.error("Placing an order failed", { errorId, error });
+    return Response.json(
+      {
+        error: `Your order could not be placed. Please try again. If it keeps happening, contact us with reference ${errorId}.`,
+        errorId,
+      },
+      { status: 500 },
+    );
+  }
+}
+
+async function placeFromRequest(request: Request) {
   // Checked first, before any work: a script sending orders in a loop is stopped here.
   const limit = await hit(`orders|${clientIp(request.headers)}`, ORDER_LIMIT);
   if (!limit.ok) {
@@ -44,13 +63,10 @@ export async function POST(request: Request) {
     after(() => sendOrderConfirmation(order.id));
     return Response.json(order, { status: 201 });
   } catch (error) {
+    // Expected refusals (sold out, product gone) are answered as they are.
     if (error instanceof OrderError) {
       return Response.json({ error: error.message }, { status: error.status });
     }
-    console.error("Placing an order failed", error);
-    return Response.json(
-      { error: "Your order could not be placed. Please try again." },
-      { status: 500 },
-    );
+    throw error;
   }
 }

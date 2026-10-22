@@ -27,8 +27,13 @@ export default function OrderActions({ orderId, status, totalCents }: OrderActio
   const move = (to: OrderStatus) =>
     startTransition(async () => {
       setError("");
-      const result = await updateOrderStatus(orderId, to);
-      if (!result.ok) setError(result.error);
+      try {
+        const result = await updateOrderStatus(orderId, to);
+        if (!result.ok) setError(result.error);
+      } catch {
+        // The server could not be reached, or failed: it logged the details.
+        setError("The order could not be updated. Check your connection and try again.");
+      }
       setConfirming(false);
     });
 

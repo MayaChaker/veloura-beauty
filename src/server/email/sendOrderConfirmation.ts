@@ -1,5 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
+import { logger } from "../../lib/logger";
 import { getOrder } from "../orders/getOrder";
 import { orderConfirmationEmail } from "./orderConfirmationEmail";
 
@@ -15,7 +16,7 @@ const FROM = process.env.EMAIL_FROM || "Veloura <onboarding@resend.dev>";
 export async function sendOrderConfirmation(orderId: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.info(`Order ${orderId}: confirmation email skipped (RESEND_API_KEY is not set).`);
+    logger.info("Confirmation email skipped: RESEND_API_KEY is not set", { orderId });
     return;
   }
   try {
@@ -29,8 +30,9 @@ export async function sendOrderConfirmation(orderId: string): Promise<void> {
       html: email.html,
       text: email.text,
     });
-    if (error) console.error(`Order ${order.reference}: confirmation email failed`, error);
+    if (error)
+      logger.error("Confirmation email failed", { orderId, reference: order.reference, error });
   } catch (error) {
-    console.error(`Order ${orderId}: confirmation email failed`, error);
+    logger.error("Confirmation email failed", { orderId, error });
   }
 }
