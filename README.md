@@ -1,119 +1,144 @@
 # Veloura Beauty
 
-A multi-brand beauty storefront built with Next.js and TypeScript. It covers the full shopping
-journey: catalogue, brands, search, shades, bag, and a three-step checkout with a delivery map.
+A multi-brand beauty store built with Next.js, TypeScript and PostgreSQL. Shoppers browse,
+choose shades, check out with cash on delivery and follow their orders; an admin area runs the
+shop: orders, prices, stock and sales.
 
 **Live demo:** https://veloura-beauty-store.vercel.app
 
-> Veloura is not affiliated with any of the brands it shows. Prices and stock are illustrative.
-> No real payments are processed: the payment options at checkout are presentation only, and
-> everything a shopper saves stays in their own browser. Product photographs come from
-> [Unsplash](https://unsplash.com/license) and [Pexels](https://www.pexels.com/license/); each one
-> is credited in `src/data/photoCredits.ts`.
+> Veloura is not affiliated with any of the brands it shows. Prices and stock are illustrative,
+> and no real payments are processed: cash on delivery is the only working method, the others are
+> shown as coming soon. Product photographs come from [Unsplash](https://unsplash.com/license) and
+> [Pexels](https://www.pexels.com/license/); each one is credited in `src/data/photoCredits.ts`.
 
 ![Homepage](docs/screenshots/home.jpg)
 
-| Shop                                             | Product with shade selection                  |
-| ------------------------------------------------ | --------------------------------------------- |
-| ![Shop](docs/screenshots/shop.jpg)               | ![Product page](docs/screenshots/product.jpg) |
-| **Shopping bag**                                 | **Checkout with a delivery map**              |
-| ![Shopping bag](docs/screenshots/cart.jpg)       | ![Checkout](docs/screenshots/checkout.jpg)    |
-| **Brands A–Z**                                   | **Customer care**                             |
-| ![Brands A–Z](docs/screenshots/brands.jpg)       | ![Customer care](docs/screenshots/care.jpg)   |
-| **Mobile**                                       |                                               |
-| ![Mobile home](docs/screenshots/mobile-home.jpg) |                                               |
+| Shop                                                   | Product with shade selection                     |
+| ------------------------------------------------------ | ------------------------------------------------ |
+| ![Shop](docs/screenshots/shop.jpg)                     | ![Product page](docs/screenshots/product.jpg)    |
+| **Shopping bag**                                       | **Checkout with a delivery map**                 |
+| ![Shopping bag](docs/screenshots/cart.jpg)             | ![Checkout](docs/screenshots/checkout.jpg)       |
+| **Admin: overview**                                    | **Admin: one order**                             |
+| ![Admin overview](docs/screenshots/admin-overview.jpg) | ![Admin order](docs/screenshots/admin-order.jpg) |
+| **Brands A–Z**                                         | **Mobile**                                       |
+| ![Brands A–Z](docs/screenshots/brands.jpg)             | ![Mobile home](docs/screenshots/mobile-home.jpg) |
 
 ## Features
 
-- **Catalogue**: 59 products from 31 brands (Chanel, Dior, Le Labo, NARS, The Ordinary, Kiehl's,
-  Olaplex…) across makeup, skincare, fragrance and haircare, with category, brand, price and
-  availability filters, sorting and pages. Filters live in the URL, so a filtered view can be
-  shared or refreshed.
-- **Brands A–Z** and a page per brand, plus a search results page.
-- **Shade variants**: foundations, concealers and lipsticks have selectable shades with their own
-  price and stock; the bag line follows the chosen shade.
-- **Bag and checkout**: quantities capped at stock, a promo code (`VELOURA10`), a free-delivery
-  threshold, and a three-step checkout (information, delivery, payment). The delivery step drops a
-  pin on an OpenStreetMap map (Leaflet, no API key) and fills the street and area from it.
-- **Order confirmation** read from the database on its own unguessable URL, and a confirmation
-  email (Resend) sent after the response, so the shopper never waits for it and a failed email
-  never fails the order.
-- **Accounts** with email and password, or Google (Better Auth): passwords are hashed, sessions live in an
-  httpOnly cookie, other sites' requests are refused, and orders placed while signed in are linked
-  to the account. Guests can still check out.
-- **Account area** (signed in only): an overview with the latest order's progress, the order
-  history from the database with status filters, account details, wishlist and beauty profile.
-  The user always comes from the session, never from the URL, so no one can open another
-  account's orders.
-- **Wishlist and beauty profile follow the account.** A guest's are kept in the browser; on
-  sign-in they are merged into the account through server actions (validated with Zod and
-  scoped to the session), then shown on every device.
-- **Customer care** with a menu of topics and each topic's answers as an accordion.
-- **Accessibility**: keyboard-operable dialogs with focus trapping and focus return, labelled
-  controls, a skip link, and reduced-motion support.
+**For shoppers**
 
-## Tech stack
+- **Catalogue**: 59 products from 31 brands across makeup, skincare, fragrance and haircare, with
+  filters, sorting and pages. Filters live in the URL, so a view can be shared or refreshed.
+- **Shades** with their own stock; the bag line follows the chosen shade.
+- **Checkout** in three steps, with a promo code (`VELOURA10`), a free-delivery threshold and a
+  delivery pin on an OpenStreetMap map (Leaflet, no API key).
+- **Orders** priced and saved on the server, a confirmation page on an unguessable URL, and a
+  confirmation email (Resend).
+- **Accounts** with email and password, or Google (Better Auth). Orders, wishlist and beauty
+  profile follow the account across devices; a guest's wishlist is merged in on sign-in. Guests
+  can still check out.
 
-Next.js 16 (App Router) · React 19 · TypeScript (strict) · PostgreSQL (Neon) · Prisma · CSS Modules ·
-Framer Motion · Leaflet · MUI icons · Jest and React Testing Library · ESLint · Prettier ·
-GitHub Actions · Vercel
+**For the admin** (`/admin`, admins only)
 
-## How it is built
+- **Overview**: orders to ship and how long the oldest has waited, revenue against the previous
+  period, orders, average order, revenue per day, low stock and best sellers, for 7, 30 or 90 days.
+- **Orders**: tabs by status, search by reference, name or phone, and one page per order with
+  the cash to collect. Status moves Placed → Shipped → Delivered; cancelling puts the items back.
+- **Products**: price, an optional "was" price shown crossed out, and stock per product or shade.
+  The store shows a change straight away.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  shopper([Shopper]) --> pages
+  admin([Admin]) --> adminpages
+
+  subgraph vercel [Next.js on Vercel]
+    pages["Store pages<br/>pre-rendered"]
+    adminpages["Admin pages<br/>rendered per request"]
+    api["POST /api/orders"]
+    actions["Server actions<br/>wishlist, profile, admin"]
+    auth["Better Auth<br/>/api/auth"]
+  end
+
+  pages --> api
+  pages --> actions
+  adminpages --> actions
+  api --> db[(PostgreSQL<br/>Neon)]
+  actions --> db
+  auth --> db
+  pages -. "built from" .-> db
+  api -. "after the response" .-> resend[Resend email]
+```
+
+- **One codebase, two kinds of pages.** Store pages are built ahead of time from the database and
+  rebuilt when an admin changes a product (`revalidatePath`), so they stay fast. Admin and
+  account pages are rendered per request, behind a session check.
+- **The server owns the truth.** Checkout sends only product ids, shades and quantities. The
+  server validates them (Zod), prices the order from the database and saves it while taking
+  stock, in one transaction.
+- **Business rules are plain functions** in `src/domain` (pricing, order status moves, dashboard
+  arithmetic), tested without a database or a browser.
+
+### Decisions worth calling out
+
+- **Money is whole cents**, in the database and in every calculation. A typed price such as
+  `19.99` is read digit by digit, never multiplied as a float.
+- **No overselling, no lost updates.** Every change that depends on the current value is a
+  conditional update that only applies if the value is still what was expected:
+  `stock >= quantity` when ordering, the order's current status when the admin moves it, and the
+  stock the admin's form loaded when it is saved. If an order changed it meanwhile, the save is
+  refused and nothing is written. Two shoppers buying the last item at once: one gets it, one is
+  told it has just sold out.
+- **Orders keep a snapshot** of names and prices at the time of purchase, so editing a product
+  never rewrites past orders, and best sellers are counted at the prices actually paid.
+- **Authorization on the server, every time.** Who the user is comes from the session cookie,
+  never from the URL or the request body, so no one can open another account's orders. Every
+  server action checks the session and validates its input, because it can be called directly.
+  The admin role is read from the database on each request, so revoking it takes effect at once;
+  sign-up cannot set it, and admins are made from the command line (`npm run make-admin`).
+- **Nothing reveals the admin.** A signed-in customer who opens an admin URL gets the store's
+  ordinary 404, with the same page title.
+- **Aggregation in the database.** The dashboard's daily revenue and best sellers are `GROUP BY`
+  queries, counted in Beirut time rather than UTC, so only one row per day leaves the database.
+- **Rate limits in Postgres**, not in memory: 5 orders per visitor every 10 minutes, 5 sign-in
+  attempts a minute. Vercel runs several server instances, and a count in memory would belong to
+  only one of them. Counting is one `INSERT … ON CONFLICT` statement, so concurrent requests
+  cannot both read the old count.
+- **Failures leave a trail, not a stack trace.** Server logs are one JSON line each. An unexpected
+  error gives the shopper a short reference and writes the same id, with the details, to the log.
+  Error pages keep the store's design and offer to try again.
+- **No hydration mismatches from saved state.** A guest's bag and wishlist live in
+  `localStorage`; `usePersistentState` renders the default first and loads the saved value after
+  mount.
+
+### Code layout
 
 ```
 src/
-├── app/                 Routes, layouts, metadata, sitemap and robots (Next.js App Router)
-│   ├── (store)/         Storefront pages sharing the header and footer
-│   └── checkout/        Checkout and order confirmation, without store navigation
-├── components/
-│   ├── layout/          Header, footer, search, side menu layout
-│   └── product-art/     Product photographs, with an SVG fallback
-├── data/                Catalogue (one file per category), merchandising and photo credits
-├── domain/              Framework-free business rules (catalogue, cart, pricing, selection, wishlist)
-├── features/            One folder per journey: products, cart, checkout, account, wishlist, profile
-├── hooks/               Commerce and customer state, persistence, modal behaviour
-├── providers/           Client-side state shared by every page
-├── repositories/        Access to browser storage
-├── server/              Server-only data access (the catalogue)
-├── services/            Order creation (demo or hosted checkout)
-├── styles/              Design tokens and element defaults (components use CSS Modules)
-└── views/               Content pages (home, brands, policies, 404)
+├── app/             Routes: (store) pages, checkout, admin, /api/orders and /api/auth
+├── components/      Layout and UI building blocks, product photographs with an SVG fallback
+├── data/            The catalogue the database is seeded from, merchandising, photo credits
+├── domain/          Framework-free rules: catalogue, cart, pricing, order status, dashboard
+├── features/        One folder per journey: products, cart, checkout, account, auth, admin
+├── hooks/           Bag, wishlist and profile state, synced to the account when signed in
+├── lib/             Database client, auth, logger
+├── providers/       Client-side state shared by every page (catalogue, bag, customer)
+├── repositories/    Access to browser storage
+├── server/          Server-only code: queries, server actions, transactions, rate limiting, email
+├── services/        The checkout's call to POST /api/orders
+├── styles/          Design tokens and element defaults (components use CSS Modules)
+├── test/            Test stand-ins, fixtures and the integration-test guard
+└── views/           Content pages (home, brands, policies, 404, error)
+prisma/              Schema, migrations, seed, make-admin
 ```
 
-Some decisions worth calling out:
+## Tech stack
 
-- **The catalogue lives in Postgres.** Products, brands and shades are read through one seam,
-  `getCatalogue()` on the server and `useCatalogue()` in client components, so no other code
-  knows where they come from. Each deploy runs `prisma migrate deploy` and a seed that only adds
-  missing products, so changes made in the database are never overwritten. Money is stored in
-  whole cents.
-- **Static where possible.** Every product, category and policy page is pre-rendered at build time
-  (`generateStaticParams`) with its own title and description; unknown URLs return a real 404.
-  Interactive parts (bag, filters, checkout) are client components inside those pages.
-- **No hydration mismatches from saved state.** The bag, wishlist and profile live in
-  `localStorage`, which the server cannot read. `usePersistentState` renders the default first
-  and loads the saved value after mount, and exposes a `hydrated` flag so checkout does not
-  redirect an "empty" bag before it has loaded.
-- **Business rules are plain functions.** Pricing, cart updates and variant resolution live in
-  `src/domain` with their own unit tests, so components stay thin and the rules can move to a
-  server later without rewriting the UI. Prices are calculated in whole cents to avoid
-  floating-point drift.
-- **Photography by convention, with an SVG fallback.** Each product has a photograph at
-  `public/images/products/<slug>.webp`, attached to the catalogue in `src/data/productImages.ts`.
-  Tests fail if a photograph or its credit is missing. `ProductVisual` serves it through
-  `next/image` with a `sizes` hint per placement; a product without a photograph is drawn as SVG
-  by `ProductArt` from its packaging type and colours.
-- **State that should be shareable is in the URL** (shop filters, selected shade, order
-  confirmation); state that belongs to the shopper is in `localStorage` behind
-  `storageRepository`.
-- **One hook for every modal surface.** The bag, quick view, filters and mobile menu share
-  `useModalDialog` for scroll lock, focus trapping, Escape to close and focus return.
-- **The server prices every order.** Checkout posts only product ids, shades and quantities to
-  `POST /api/orders`. The route validates them with Zod, prices the order from the database,
-  and saves it while taking the items off the stock in one transaction; each stock update only
-  applies while enough is left, so the last item cannot be sold twice. Orders keep a snapshot of
-  names and prices, and are reached by an unguessable id. Cash on delivery is the only payment
-  method until a provider is connected; the others are shown as coming soon.
+Next.js 16 (App Router) · React 19 · TypeScript (strict) · PostgreSQL (Neon) · Prisma 7 ·
+Better Auth · Zod · Resend · CSS Modules · Framer Motion · Leaflet · Jest and React Testing
+Library · Node test runner · ESLint · Prettier · GitHub Actions · Vercel
 
 ## Getting started
 
@@ -121,40 +146,61 @@ Requires Node.js 20.9 or newer, and Docker for the local database.
 
 ```bash
 npm install          # also generates the Prisma client
-cp .env.example .env
+cp .env.example .env # then set BETTER_AUTH_SECRET
 npm run db:up        # Postgres in Docker
 npm run db:migrate   # create the tables
 npm run db:seed      # load the catalogue from src/data
 npm run dev          # http://localhost:3000
 ```
 
-| Script                 | What it does                         |
-| ---------------------- | ------------------------------------ |
-| `npm run dev`          | Development server                   |
-| `npm run build`        | Production build                     |
-| `npm start`            | Serve the production build           |
-| `npm run test:ci`      | Run the test suite once              |
-| `npm run lint`         | ESLint, failing on any warning       |
-| `npm run typecheck`    | TypeScript, strict mode              |
-| `npm run format:check` | Verify Prettier formatting           |
-| `npm run db:migrate`   | Apply schema changes to the database |
-| `npm run db:studio`    | Browse the database in the browser   |
+To open the admin, create an account on the site, then:
 
-Environment variables are listed in [`.env.example`](.env.example).
+```bash
+npm run make-admin -- you@example.com
+```
+
+| Script                     | What it does                                             |
+| -------------------------- | -------------------------------------------------------- |
+| `npm run dev`              | Development server                                       |
+| `npm run build`            | Production build                                         |
+| `npm run test:ci`          | Unit and component tests                                 |
+| `npm run test:integration` | Server code against a real Postgres (see below)          |
+| `npm run lint`             | ESLint, failing on any warning                           |
+| `npm run typecheck`        | TypeScript, strict mode                                  |
+| `npm run format:check`     | Verify Prettier formatting                               |
+| `npm run db:migrate`       | Create a migration from schema changes and apply it      |
+| `npm run db:studio`        | Browse the database in the browser                       |
+| `npm run make-admin`       | Give an account the admin role (`--revoke` to remove it) |
+
+Environment variables are listed, with what each one is for, in [`.env.example`](.env.example).
 
 ## Testing
 
-Unit tests cover the domain rules (pricing, cart state, variant selection, shop filters).
-Integration tests walk through checkout to the confirmation page, URL-driven filters,
-and the route handlers' not-found and metadata behaviour, with `next/navigation` replaced by an
-in-memory stand-in (`src/test/navigation.ts`). CI runs formatting, lint, the type check, tests and a
-production build on every push and pull request.
+- **Unit and component tests** (Jest, React Testing Library): pricing, order status moves,
+  dashboard arithmetic, validation, the server actions' access checks, the checkout journey,
+  account pages, the admin's forms and their failure states. The database and session are
+  replaced, so these run in seconds.
+- **Integration tests** (`*.int.test.ts`, Node's test runner) run the server code against a real
+  Postgres: an order priced from the database whatever the request says, two shoppers buying the
+  last item at once, a refused order rolling back, cancelling restocking exactly once, an admin's
+  save refused when an order changed the stock, and ten concurrent requests against a rate limit
+  of five. They change data, so they refuse to run on a database whose name does not end in
+  `_test`:
+
+  ```bash
+  DATABASE_URL=postgresql://veloura:veloura@127.0.0.1:5432/veloura_test npm run test:integration
+  ```
+
+CI runs formatting, lint, the type check, the unit tests, the migrations and seed, the
+integration tests and a production build on every push and pull request.
 
 ## Roadmap
 
 - A real payment provider behind the existing checkout steps.
+- A verified email domain, so confirmation emails reach every shopper.
 
-The full plan is in [`docs/refactor-roadmap.md`](docs/refactor-roadmap.md).
+How the front end was migrated to Next.js and TypeScript is described in
+[`docs/refactor-roadmap.md`](docs/refactor-roadmap.md).
 
 ## Author
 
