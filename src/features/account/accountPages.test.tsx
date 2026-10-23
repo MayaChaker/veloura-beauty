@@ -64,3 +64,16 @@ test("a guest is sent to sign in, and back to the page afterwards", async () => 
   testAccount.user = null;
   await expect(ordersPage()).rejects.toThrow("NEXT_REDIRECT /sign-in?next=%2Forders");
 });
+
+test("a customer's account menu has no link to the admin", async () => {
+  render(<TestProviders>{await OverviewRoute()}</TestProviders>);
+  const menu = screen.getByRole("navigation", { name: "Your account" });
+  expect(within(menu).queryByRole("link", { name: "Admin" })).not.toBeInTheDocument();
+});
+
+test("an admin finds the admin in the account menu", async () => {
+  testAccount.user = { id: "u1", name: "Maya Chaker", email: "maya@example.com", isAdmin: true };
+  render(<TestProviders>{await OverviewRoute()}</TestProviders>);
+  const menu = screen.getByRole("navigation", { name: "Your account" });
+  expect(within(menu).getByRole("link", { name: "Admin" })).toHaveAttribute("href", "/admin");
+});

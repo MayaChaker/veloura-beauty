@@ -26,14 +26,16 @@ const maya = { id: "u1", name: "Maya", email: "maya@example.com", image: null };
 
 beforeEach(() => jest.clearAllMocks());
 
-test("returns the user from the session", async () => {
+test("returns the user from the session, with the role from the database", async () => {
   getSession.mockResolvedValueOnce({
     user: { id: "u1", name: "Maya", email: "maya@example.com", image: null },
   });
+  findUnique.mockResolvedValueOnce({ role: "Customer" });
   await expect(requireUser("/orders")).resolves.toEqual({
     id: "u1",
     name: "Maya",
     email: "maya@example.com",
+    isAdmin: false,
   });
 });
 

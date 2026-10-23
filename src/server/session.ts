@@ -26,12 +26,13 @@ export const getCurrentUser = cache(async (): Promise<AccountUser | null> => {
 /**
  * The signed-in shopper, or a redirect to sign in that comes back to `path` afterwards.
  * Account pages call this first: who the user is always comes from the session, never from
- * the URL, so nobody can open someone else's account by changing an id.
+ * the URL, so nobody can open someone else's account by changing an id. `isAdmin` comes from
+ * the database, for the account menu's link to the admin.
  */
-export async function requireUser(path: string): Promise<AccountUser> {
+export async function requireUser(path: string): Promise<AccountUser & { isAdmin: boolean }> {
   const user = await getCurrentUser();
   if (!user) redirect(`/sign-in?next=${encodeURIComponent(path)}`);
-  return user;
+  return { ...user, isAdmin: await isAdmin(user.id) };
 }
 
 /**
@@ -62,7 +63,7 @@ export const adminTitle = (title: string) => async (): Promise<Metadata> =>
  * ordinary 404, so the admin area does not reveal that it exists.
  */
 export async function requireAdmin(path: string): Promise<AccountUser> {
-  const user = await requireUser(path);
-  if (!(await isAdmin(user.id))) notFound();
+  const { isAdmin: admin, ...user } = await requireUser(path);
+  if (!admin) notFound();
   return user;
 }

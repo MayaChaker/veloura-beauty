@@ -13,7 +13,8 @@ const ACCOUNT_LINKS = [
 ];
 
 interface AccountShellProps {
-  user: AccountUser;
+  /** isAdmin comes from the server (requireUser), so the link is never sent to a customer. */
+  user: AccountUser & { isAdmin?: boolean };
   /** Href of the page, to mark it in the menu. */
   current: string;
   title: ReactNode;
@@ -27,7 +28,9 @@ export default function AccountShell({ user, current, title, intro, children }: 
     <main className={styles.page}>
       <SideNavLayout
         label="Your account"
-        links={ACCOUNT_LINKS}
+        links={
+          user.isAdmin ? [...ACCOUNT_LINKS, { label: "Admin", href: "/admin" }] : ACCOUNT_LINKS
+        }
         current={current}
         header={
           <div className={styles.me}>
