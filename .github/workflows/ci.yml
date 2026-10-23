@@ -38,6 +38,8 @@ jobs:
       - run: npm run test:ci
       - run: npx prisma migrate deploy
       - run: npx prisma db seed
+      # The server code against this Postgres: orders, races, the admin, the rate limit.
+      - run: npm run test:integration
       - run: npm run build
         env:
           CI: true

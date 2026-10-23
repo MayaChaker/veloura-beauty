@@ -6,7 +6,8 @@ const createJestConfig = nextJest({ dir: "./" });
 module.exports = createJestConfig({
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/"],
+  // *.int.test.ts need a real database: they run with jest.integration.config.js.
+  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/", "\\.int\\.test\\.ts$"],
   moduleNameMapper: {
     "^server-only$": "<rootDir>/src/test/serverOnly.js",
     "/server/catalogue$": "<rootDir>/src/test/serverCatalogue.ts",
