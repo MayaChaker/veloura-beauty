@@ -26,6 +26,11 @@ export interface CommerceActions {
   applyPromoCode: (code: string) => boolean;
   removePromoCode: () => void;
   toggleWishlist: (id: ProductId) => void;
+  /**
+   * Empties the bag and the wishlist kept in this browser, on sign-out: the wishlist is saved
+   * in the account, and the next person on this device must not see or inherit either.
+   */
+  forgetShopper: () => void;
 }
 
 export interface CommerceState extends CommerceActions {
@@ -95,6 +100,11 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
         const saved = !latest.current.wishlist.includes(id);
         setWishlist((items) => toggleWishlistItem(items, id));
         if (latest.current.userId) setWishlistItem(id, saved).catch(() => {});
+      },
+      forgetShopper: () => {
+        setCart([]);
+        setPromoCode("");
+        setWishlist([]);
       },
     }),
     [catalogue, setCart, setPromoCode, setWishlist],

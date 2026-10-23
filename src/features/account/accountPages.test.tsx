@@ -50,7 +50,7 @@ test("the overview invites a first order when there is none", async () => {
 
 test("orders can be filtered to those still in progress", async () => {
   testAccount.orders = [order("VB-OPEN01", "Placed"), order("VB-DONE01", "Delivered")];
-  render(await ordersPage("open"));
+  render(<TestProviders>{await ordersPage("open")}</TestProviders>);
 
   expect(screen.getByRole("link", { name: "In progress · 1" })).toHaveAttribute(
     "aria-current",
