@@ -197,7 +197,8 @@ integration tests and a production build on every push and pull request.
 ## Roadmap
 
 - A real payment provider behind the existing checkout steps.
-- A verified email domain, so confirmation emails reach every shopper.
+- A verified email domain, so confirmation emails reach every shopper, and with it a "forgot
+  password" email. Until then, shoppers who forget a password can sign in with Google.
 
 How the front end was migrated to Next.js and TypeScript is described in
 [`docs/refactor-roadmap.md`](docs/refactor-roadmap.md).

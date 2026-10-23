@@ -3,12 +3,15 @@
 import type { OrderSummary } from "../domain/orders/summary";
 import type { AccountUser } from "../server/session";
 
-export const testAccount: { user: AccountUser | null; orders: OrderSummary[]; methods: string[] } =
-  {
-    user: { id: "u1", name: "Maya Chaker", email: "maya@example.com" },
-    orders: [],
-    methods: ["Google"],
-  };
+export const testAccount: {
+  user: (AccountUser & { isAdmin?: boolean }) | null;
+  orders: OrderSummary[];
+  methods: string[];
+} = {
+  user: { id: "u1", name: "Maya Chaker", email: "maya@example.com" },
+  orders: [],
+  methods: ["Google"],
+};
 
 export const getCurrentUser = async () => testAccount.user;
 export const requireUser = async (path: string) => {
