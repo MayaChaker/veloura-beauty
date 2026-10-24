@@ -11,6 +11,8 @@ import { usePersistentState } from "./usePersistentState";
 export interface CustomerActions {
   saveProfile: (nextProfile: BeautyProfile) => void;
   addRecentlyViewed: (id: ProductId) => void;
+  /** Clears the profile and recently viewed products kept in this browser, on sign-out. */
+  forgetShopper: () => void;
 }
 
 export interface CustomerState extends CustomerActions {
@@ -58,6 +60,10 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
         if (latest.current.userId) saveBeautyProfile(nextProfile).catch(() => {});
       },
       addRecentlyViewed: (id) => setRecentlyViewed((items) => addRecentlyViewedItem(items, id)),
+      forgetShopper: () => {
+        setProfile(EMPTY_PROFILE);
+        setRecentlyViewed([]);
+      },
     }),
     [setProfile, setRecentlyViewed],
   );
