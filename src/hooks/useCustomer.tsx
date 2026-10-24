@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode }
 import { EMPTY_PROFILE } from "../domain/customer/beautyProfile";
 import { addRecentlyViewedItem } from "../domain/customer/recentlyViewed";
 import { useSession } from "../lib/authClient";
-import { STORAGE_KEYS } from "../repositories/storageRepository";
+import { STORAGE_KEYS, storageRepository } from "../repositories/storageRepository";
 import { saveBeautyProfile, syncBeautyProfile } from "../server/accountActions";
 import type { ProductId } from "../types/commerce";
 import type { BeautyProfile } from "../types/customer";
@@ -61,6 +61,9 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
       },
       addRecentlyViewed: (id) => setRecentlyViewed((items) => addRecentlyViewedItem(items, id)),
       forgetShopper: () => {
+        // Written straight away, like the bag (see useCommerce).
+        storageRepository.write(STORAGE_KEYS.profile, EMPTY_PROFILE);
+        storageRepository.write(STORAGE_KEYS.recent, []);
         setProfile(EMPTY_PROFILE);
         setRecentlyViewed([]);
       },

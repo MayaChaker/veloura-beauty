@@ -10,7 +10,7 @@ import { calculateTotals, findPromotion, normalizePromoCode } from "../domain/ca
 import type { SelectionInput } from "../domain/product/productSelection";
 import { toggleWishlistItem } from "../domain/wishlist/wishlist";
 import { useSession } from "../lib/authClient";
-import { STORAGE_KEYS } from "../repositories/storageRepository";
+import { STORAGE_KEYS, storageRepository } from "../repositories/storageRepository";
 import { setWishlistItem, syncWishlist } from "../server/accountActions";
 import type { CartLine, ProductId, Totals } from "../types/commerce";
 import { useCatalogue } from "./useCatalogue";
@@ -102,6 +102,11 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
         if (latest.current.userId) setWishlistItem(id, saved).catch(() => {});
       },
       forgetShopper: () => {
+        // Written straight away, not left to usePersistentState's effect: the next page may load
+        // before that effect runs, and would read the previous shopper's things back.
+        storageRepository.write(STORAGE_KEYS.cart, []);
+        storageRepository.write(STORAGE_KEYS.promo, "");
+        storageRepository.write(STORAGE_KEYS.wishlist, []);
         setCart([]);
         setPromoCode("");
         setWishlist([]);
