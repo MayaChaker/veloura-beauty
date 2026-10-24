@@ -6,8 +6,14 @@ const createJestConfig = nextJest({ dir: "./" });
 module.exports = createJestConfig({
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
-  // *.int.test.ts need a real database: they run with npm run test:integration.
-  testPathIgnorePatterns: ["<rootDir>/.next/", "<rootDir>/node_modules/", "\\.int\\.test\\.ts$"],
+  // *.int.test.ts need a real database (npm run test:integration); e2e/ needs a browser and
+  // the built site (npm run test:e2e).
+  testPathIgnorePatterns: [
+    "<rootDir>/.next/",
+    "<rootDir>/node_modules/",
+    "<rootDir>/e2e/",
+    "\\.int\\.test\\.ts$",
+  ],
   moduleNameMapper: {
     "^server-only$": "<rootDir>/src/test/serverOnly.js",
     "/server/catalogue$": "<rootDir>/src/test/serverCatalogue.ts",

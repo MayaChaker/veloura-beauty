@@ -165,6 +165,7 @@ npm run make-admin -- you@example.com
 | `npm run build`            | Production build                                         |
 | `npm run test:ci`          | Unit and component tests                                 |
 | `npm run test:integration` | Server code against a real Postgres (see below)          |
+| `npm run test:e2e`         | A real browser through the built site (see below)        |
 | `npm run lint`             | ESLint, failing on any warning                           |
 | `npm run typecheck`        | TypeScript, strict mode                                  |
 | `npm run format:check`     | Verify Prettier formatting                               |
@@ -191,8 +192,18 @@ Environment variables are listed, with what each one is for, in [`.env.example`]
   DATABASE_URL=postgresql://veloura:veloura@127.0.0.1:5432/veloura_test npm run test:integration
   ```
 
+- **End-to-end tests** (`e2e/`, Playwright) drive a real browser through the built site: a guest
+  buys a shade and reaches the confirmation, an account's wishlist and bag are gone for the next
+  account after signing out, a customer opening the admin gets the ordinary 404, and an admin
+  finds an order through the account menu and ships it. Same database rule as above:
+
+  ```bash
+  npm run build
+  DATABASE_URL=postgresql://veloura:veloura@127.0.0.1:5432/veloura_test npm run test:e2e
+  ```
+
 CI runs formatting, lint, the type check, the unit tests, the migrations and seed, the
-integration tests and a production build on every push and pull request.
+integration tests, a production build and the end-to-end tests on every push and pull request.
 
 ## Roadmap
 

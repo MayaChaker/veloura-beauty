@@ -29,7 +29,9 @@ test("signing out leaves nothing of the shopper in this browser", async () => {
   fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
 
   await waitFor(() => expect(router.push).toHaveBeenCalledWith("/"));
-  await waitFor(() => expect(stored("wishlist.v1")).toEqual([]));
+  // Already empty when the navigation starts, not after a later effect: the next page could
+  // load first and read the previous shopper's things back (an end-to-end test caught this).
+  expect(stored("wishlist.v1")).toEqual([]);
   expect(stored("cart.v2")).toEqual([]);
   expect(stored("beautyProfile.v1")).toMatchObject({ skinType: "" });
   expect(stored("recentlyViewed.v1")).toEqual([]);
