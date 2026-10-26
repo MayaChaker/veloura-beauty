@@ -34,7 +34,7 @@ const COLOURS = [
   ["--color-sand", "#C3B09C", "Hero ground, from the campaign backdrop"],
   ["--color-paper", "#FBF9F5", "Inputs, raised surfaces"],
   ["--color-umber", "#2A231E", "Text, primary buttons"],
-  ["--color-taupe", "#7D7165", "Secondary text"],
+  ["--color-taupe", "#716559", "Secondary text"],
   ["--color-line", "#DDD3C5", "Borders, dividers"],
   ["--color-accent", "#7C2A2A", "Oxblood: hover, sale price, focus"],
 ] as const;

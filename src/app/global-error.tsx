@@ -32,7 +32,7 @@ export default function GlobalError({
           <h1 style={{ margin: "24px 0 8px", fontFamily: "Georgia, serif", fontWeight: 300 }}>
             The site didn’t load.
           </h1>
-          <p style={{ color: "#7d7165" }}>
+          <p style={{ color: "#716559" }}>
             The problem is on our side. Please try again in a few minutes.
             {error.digest && ` Reference ${error.digest}.`}
           </p>

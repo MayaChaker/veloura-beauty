@@ -11,7 +11,7 @@
   --color-sand: #c3b09c; /* hero ground, sampled from the campaign backdrop */
   --color-paper: #fbf9f5; /* inputs, raised surfaces */
   --color-umber: #2a231e; /* text, primary buttons, announcement bar */
-  --color-taupe: #7d7165; /* secondary text */
+  --color-taupe: #716559; /* secondary text: 4.5:1 or more on ivory, bone and paper (WCAG AA) */
   --color-line: #ddd3c5; /* borders and dividers */
   --color-accent: #7c2a2a; /* oxblood, from the campaign's red lip: hover, sale, focus */
   --color-white: #ffffff;
