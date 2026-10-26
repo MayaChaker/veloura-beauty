@@ -47,11 +47,25 @@ const crumbsFor = (product: Product): Crumb[] => {
   ];
 };
 
+/**
+ * The product with the shade named in the URL (?variant=deep). Its page renders it inside a
+ * Suspense boundary whose fallback is <ProductView> with the first shade, so the product is in
+ * the HTML built ahead of time, for search engines and link previews.
+ */
 export default function ProductPage({ slug }: { slug: string }) {
+  return <ProductView slug={slug} variantId={useSearchParams().get("variant")} />;
+}
+
+export function ProductView({
+  slug,
+  variantId = null,
+}: {
+  slug: string;
+  variantId?: string | null;
+}) {
   const catalogue = useCatalogue();
   const router = useRouter();
   const pathname = usePathname();
-  const params = useSearchParams();
   const { openCart } = useCartDrawer();
   const { addToCart } = useCommerce();
   const { addRecentlyViewed, recentlyViewed } = useCustomer();
@@ -66,8 +80,7 @@ export default function ProductPage({ slug }: { slug: string }) {
 
   // The chosen shade lives in the URL (?variant=deep), so it can be linked to directly.
   const shade =
-    product.variants?.find((variant) => variant.id === params.get("variant")) ??
-    product.variants?.[0];
+    product.variants?.find((variant) => variant.id === variantId) ?? product.variants?.[0];
   const display = resolveProductSelection(catalogue, product, shade?.id) ?? product;
   const stock = OUT_OF_STOCK_IDS.includes(product.id)
     ? 0

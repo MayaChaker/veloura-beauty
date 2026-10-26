@@ -1,4 +1,4 @@
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ShopFilters } from "./shopLogic";
 
 /** Query parameters cleared by "Clear all"; search, collection and subcategory stay. */
@@ -20,12 +20,12 @@ interface Scope {
 
 /**
  * Shop filters stored in the URL, so results survive a refresh and can be shared.
- * Filter changes replace the URL in place and return to the first page.
+ * Filter changes replace the URL in place and return to the first page. `params` is the
+ * page's query string, passed in so that the page can also be rendered without one.
  */
-export function useShopFilters({ category, brand }: Scope = {}) {
+export function useShopFilters({ category, brand }: Scope, params: URLSearchParams) {
   const router = useRouter();
   const pathname = usePathname();
-  const params = useSearchParams();
   const page = Math.max(1, Number(params.get("page")) || 1);
 
   const filters: ShopFilters = {
