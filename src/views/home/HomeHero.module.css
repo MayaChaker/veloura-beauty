@@ -9,8 +9,9 @@
   gap: var(--space-6);
   padding: var(--space-6) var(--gutter) var(--space-6);
 }
+/* Softened, but no lighter than 0.8: umber at 0.8 on sand is 4.9:1 (WCAG AA asks 4.5:1). */
 .text :global(.text-label) {
-  opacity: 0.75;
+  opacity: 0.8;
 }
 .title {
   margin: var(--space-3) 0 var(--space-4);
@@ -36,7 +37,7 @@
   font-size: var(--text-small);
 }
 .categories span {
-  opacity: 0.7;
+  opacity: 0.8;
 }
 .categories a {
   text-decoration: none;
