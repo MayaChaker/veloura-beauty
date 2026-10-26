@@ -64,7 +64,14 @@ export default function ShopTheLook() {
         <ol className={styles.list}>
           {look.map((product) => (
             <li key={product.id}>
-              <Link href={`/product/${product.slug}`} className={styles.thumb}>
+              {/* The same link as the name beside it: hidden from screen readers and the tab
+                  order, so the product is announced once, by name. */}
+              <Link
+                href={`/product/${product.slug}`}
+                className={styles.thumb}
+                aria-hidden="true"
+                tabIndex={-1}
+              >
                 {product.image && (
                   <Image src={product.image} alt="" fill sizes="72px" quality={80} />
                 )}
