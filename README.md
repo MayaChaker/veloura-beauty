@@ -105,7 +105,14 @@ flowchart LR
 - **Rate limits in Postgres**, not in memory: 5 orders per visitor every 10 minutes, 5 sign-in
   attempts a minute. Vercel runs several server instances, and a count in memory would belong to
   only one of them. Counting is one `INSERT … ON CONFLICT` statement, so concurrent requests
-  cannot both read the old count.
+  cannot both read the old count. Reading the session, which every page does, is not counted:
+  it guesses nothing, and counting it cost a database write per page view.
+- **Every store page is complete in its pre-built HTML**, for search engines, link previews and
+  slow connections. Pages that read the URL (filters, the chosen shade) would otherwise be left
+  out of the HTML by Next.js, so they render their default view as the `Suspense` fallback and
+  apply the URL in the browser. The sign-in form reads `?next=` with `useSyncExternalStore`
+  instead, because swapping a form after load would erase what was typed. The return path is
+  resolved with `new URL()` and must stay on the site.
 - **Failures leave a trail, not a stack trace.** Server logs are one JSON line each. An unexpected
   error gives the shopper a short reference and writes the same id, with the details, to the log.
   Error pages keep the store's design and offer to try again.
@@ -194,8 +201,9 @@ Environment variables are listed, with what each one is for, in [`.env.example`]
 
 - **End-to-end tests** (`e2e/`, Playwright) drive a real browser through the built site: a guest
   buys a shade and reaches the confirmation, an account's wishlist and bag are gone for the next
-  account after signing out, a customer opening the admin gets the ordinary 404, and an admin
-  finds an order through the account menu and ships it. Same database rule as above:
+  account after signing out, a customer opening the admin gets the ordinary 404, an admin
+  finds an order through the account menu and ships it, and with JavaScript turned off the
+  product, listing and sign-in pages still show their content. Same database rule as above:
 
   ```bash
   npm run build
