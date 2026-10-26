@@ -87,3 +87,29 @@ test("signed in, each change is saved to the account", async () => {
     preferences: [],
   });
 });
+
+test("an account's wishlist arriving after sign-out is not written back", async () => {
+  signedIn();
+  let answer: (ids: number[]) => void = () => {};
+  (syncWishlist as jest.Mock).mockImplementationOnce(
+    () => new Promise<number[]>((resolve) => (answer = resolve)),
+  );
+  function SignOutProbe() {
+    const { forgetShopper } = useCommerce();
+    return <button onClick={forgetShopper}>sign out</button>;
+  }
+  render(
+    <TestProviders>
+      <Probe />
+      <SignOutProbe />
+    </TestProviders>,
+  );
+  await waitFor(() => expect(syncWishlist).toHaveBeenCalled());
+
+  // The shopper signs out while the account's wishlist is still on its way.
+  fireEvent.click(screen.getByRole("button", { name: "sign out" }));
+  await act(async () => answer([3, 7]));
+
+  expect(screen.getByText("wishlist:")).toBeInTheDocument();
+  expect(window.localStorage.getItem("velouraBeauty.wishlist.v1")).toBe("[]");
+});

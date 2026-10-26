@@ -32,15 +32,18 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     latest.current = { profile, userId };
   });
+  // Bumped on sign-out, so a profile still on its way from the server is not written back.
+  const signOuts = useRef(0);
 
   // Signed in, the account's profile is the one shown; an account without one takes the
   // profile this browser holds.
   useEffect(() => {
     if (!userId || !profileLoaded) return;
     let current = true;
+    const started = signOuts.current;
     syncBeautyProfile(latest.current.profile)
       .then((stored) => {
-        if (current && stored) setProfile(stored);
+        if (current && stored && signOuts.current === started) setProfile(stored);
       })
       .catch(() => {});
     return () => {
@@ -61,6 +64,7 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
       },
       addRecentlyViewed: (id) => setRecentlyViewed((items) => addRecentlyViewedItem(items, id)),
       forgetShopper: () => {
+        signOuts.current += 1;
         // Written straight away, like the bag (see useCommerce).
         storageRepository.write(STORAGE_KEYS.profile, EMPTY_PROFILE);
         storageRepository.write(STORAGE_KEYS.recent, []);

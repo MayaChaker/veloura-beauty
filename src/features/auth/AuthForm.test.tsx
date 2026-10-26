@@ -1,7 +1,11 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { signIn, signUp } from "../../lib/authClient";
-import { router, setLocation } from "../../test/navigation";
-import AuthForm from "./AuthForm";
+import { router } from "../../test/navigation";
+import AuthForm, { safeNext } from "./AuthForm";
+
+// The form reads ?next= from the real address bar, so tests set it there.
+const setLocation = (url: string) => window.history.replaceState(null, "", url);
+afterEach(() => setLocation("/"));
 
 const type = (label: string, value: string) =>
   fireEvent.change(screen.getByLabelText(label, { exact: false }), { target: { value } });
@@ -99,4 +103,24 @@ test("the password can be shown while typing", () => {
   fireEvent.click(screen.getByRole("button", { name: "Show" }));
   expect(password).toHaveAttribute("type", "text");
   expect(screen.getByRole("button", { name: "Hide" })).toHaveAttribute("aria-pressed", "true");
+});
+
+test("the return path after signing in never leaves the site", () => {
+  expect(safeNext("/orders?status=open")).toBe("/orders?status=open");
+  expect(safeNext(null)).toBe("/account");
+  expect(safeNext("https://evil.example")).toBe("/account");
+  expect(safeNext("//evil.example")).toBe("/account");
+  // A backslash is read as a slash by browsers: "/\evil" is "//evil".
+  expect(safeNext("/\\evil.example")).toBe("/account");
+  expect(safeNext("/\\/evil.example")).toBe("/account");
+});
+
+test("a crafted return path is ignored when signing in", async () => {
+  signInMock.mockResolvedValueOnce({ data: {}, error: null });
+  setLocation("/sign-in?next=/%5Cevil.example");
+  render(<AuthForm mode="sign-in" google />);
+  type("Email", "maya@example.com");
+  type("Password", "a-long-password");
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+  await waitFor(() => expect(router.push).toHaveBeenCalledWith("/account"));
 });

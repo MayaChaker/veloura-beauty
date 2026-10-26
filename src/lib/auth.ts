@@ -49,6 +49,10 @@ export const auth = betterAuth({
     customRules: {
       "/sign-in/email": { window: 60, max: 5 },
       "/sign-up/email": { window: 60 * 60, max: 5 },
+      // Every page asks who is signed in. Counting those would cost a database transaction per
+      // page view, all on one row per visitor; under load they queued for over a minute.
+      // Reading a session guesses nothing, so it is not limited.
+      "/get-session": false,
     },
   },
   // Must stay last: lets server actions set the session cookie.
