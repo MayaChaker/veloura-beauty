@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import ConfirmationRoute from "../../app/checkout/confirmation/[orderId]/page";
+import ConfirmationRoute, {
+  generateMetadata,
+} from "../../app/checkout/confirmation/[orderId]/page";
 import { receipt } from "../../test/receipt";
 import OrderConfirmationPage from "./OrderConfirmationPage";
 
@@ -23,4 +25,13 @@ test("the route renders a saved order and 404s an unknown one", async () => {
   render(await ConfirmationRoute(params(receipt.id)));
   expect(screen.getByText("Order VB-7K2M9Q")).toBeInTheDocument();
   await expect(ConfirmationRoute(params("not-an-order"))).rejects.toThrow("NEXT_NOT_FOUND");
+});
+
+test("an unknown order's 404 is not titled as a confirmation", async () => {
+  await expect(generateMetadata(params(receipt.id))).resolves.toMatchObject({
+    title: "Order confirmed",
+  });
+  await expect(generateMetadata(params("not-an-order"))).resolves.toMatchObject({
+    title: "Page not found",
+  });
 });
