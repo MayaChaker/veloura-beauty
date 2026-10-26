@@ -59,15 +59,19 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     latest.current = { wishlist, userId };
   });
+  // Bumped on sign-out. An account's wishlist still on its way from the server when the
+  // shopper signs out must not be written back into the browser (see forgetShopper).
+  const signOuts = useRef(0);
 
   // Signing in adds what was saved as a guest to the account's wishlist, then shows the
   // account's, so the hearts match on every device. A guest's wishlist stays in this browser.
   useEffect(() => {
     if (!userId || !wishlistLoaded) return;
     let current = true;
+    const started = signOuts.current;
     syncWishlist(latest.current.wishlist)
       .then((ids) => {
-        if (current && ids) setWishlist(ids);
+        if (current && ids && signOuts.current === started) setWishlist(ids);
       })
       .catch(() => {
         // Offline or signed out meanwhile: the browser's wishlist still works.
@@ -102,6 +106,7 @@ export function CommerceProvider({ children }: { children: ReactNode }) {
         if (latest.current.userId) setWishlistItem(id, saved).catch(() => {});
       },
       forgetShopper: () => {
+        signOuts.current += 1;
         // Written straight away, not left to usePersistentState's effect: the next page may load
         // before that effect runs, and would read the previous shopper's things back.
         storageRepository.write(STORAGE_KEYS.cart, []);

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type ChangeEvent, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Check } from "@mui/icons-material";
 import Button from "../../components/ui/Button";
 import { Input } from "../../components/ui/Field";
@@ -12,9 +12,20 @@ import styles from "./auth.module.css";
 
 type Mode = "sign-in" | "sign-up";
 
-/** Only paths on this site, so a crafted ?next= cannot send the shopper elsewhere. */
-const safeNext = (next: string | null) =>
-  next && next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+/**
+ * Only paths on this site, so a crafted ?next= cannot send the shopper elsewhere. The path is
+ * resolved the way the browser would: "//evil.com" and "/\evil.com" both leave the site.
+ */
+export function safeNext(next: string | null) {
+  if (!next?.startsWith("/")) return "/account";
+  const base = "https://veloura.invalid";
+  try {
+    const url = new URL(next, base);
+    return url.origin === base ? `${url.pathname}${url.search}${url.hash}` : "/account";
+  } catch {
+    return "/account";
+  }
+}
 
 const COPY: Record<Mode, { title: string; intro: string; submit: string; busy: string }> = {
   "sign-in": {
@@ -43,14 +54,25 @@ interface AuthFormProps {
   google: boolean;
 }
 
+// The page's query string. The address does not change while the form is open, so there is
+// nothing to subscribe to. On the server it is empty: the form is built ahead of time.
+const noSubscription = () => () => {};
+const readSearch = () => window.location.search;
+const noSearch = () => "";
+
 /**
  * Sign in and create an account: the form on the left, and on the right what an account
- * gives, with the way to the other form.
+ * gives, with the way to the other form. After signing in it returns to ?next=.
+ *
+ * ?next= is read with useSyncExternalStore rather than useSearchParams: the latter would leave
+ * the form out of the pre-built HTML, or swap the form for another once the page loads and
+ * lose what the shopper had already typed.
  */
 export default function AuthForm({ mode, google }: AuthFormProps) {
+  const next = safeNext(
+    new URLSearchParams(useSyncExternalStore(noSubscription, readSearch, noSearch)).get("next"),
+  );
   const router = useRouter();
-  const params = useSearchParams();
-  const next = safeNext(params.get("next"));
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
