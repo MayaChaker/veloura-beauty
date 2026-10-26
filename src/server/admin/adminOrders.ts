@@ -105,5 +105,3 @@ export async function getAdminOrder(id: string) {
     accountOrders: order.user?._count.orders ?? null,
   };
 }
-
-export type AdminOrder = NonNullable<Awaited<ReturnType<typeof getAdminOrder>>>;

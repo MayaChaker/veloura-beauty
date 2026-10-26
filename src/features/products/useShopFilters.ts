@@ -89,5 +89,3 @@ export function useShopFilters({ category, brand }: Scope, params: URLSearchPara
     hrefForSub,
   };
 }
-
-export type ShopFilterControls = ReturnType<typeof useShopFilters>;

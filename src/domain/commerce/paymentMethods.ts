@@ -24,6 +24,3 @@ export const PAYMENT_OPTIONS: readonly PaymentOption[] = [
     available: true,
   },
 ];
-
-export const paymentLabel = (method: PaymentMethod): string =>
-  PAYMENT_OPTIONS.find((option) => option.id === method)?.label ?? method;
