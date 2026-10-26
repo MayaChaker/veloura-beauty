@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import ShopPage from "../../../features/products/ShopPage";
+import ShopPage, { ShopView } from "../../../features/products/ShopPage";
 
 export const metadata = {
   title: "Shop",
@@ -10,7 +10,7 @@ export const metadata = {
 export default function Page() {
   // ShopPage reads filters from the query string, which is only known in the browser.
   return (
-    <Suspense>
+    <Suspense fallback={<ShopView />}>
       <ShopPage />
     </Suspense>
   );

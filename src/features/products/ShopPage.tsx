@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Close, Tune } from "@mui/icons-material";
 import { SUBCATEGORIES } from "../../data/subcategories";
 import { useCartDrawer } from "../../hooks/useCartDrawer";
@@ -44,6 +45,15 @@ interface ShopPageProps {
   search?: boolean;
 }
 
+/**
+ * The listing with the filters in the URL. Pages render it inside a Suspense boundary whose
+ * fallback is <ShopView> with no filters, so the default listing is in the HTML built ahead
+ * of time, for search engines and for shoppers before the JavaScript has loaded.
+ */
+export default function ShopPage(props: ShopPageProps) {
+  return <ShopView {...props} params={useSearchParams()} />;
+}
+
 interface NavLink {
   label: string;
   href: string;
@@ -57,11 +67,18 @@ interface NavLink {
  * accordions) beside a three-column grid. On phones the sidebar opens in a drawer.
  * Filters live in the URL.
  */
-export default function ShopPage({ category, brandSlug, search = false }: ShopPageProps) {
+const NO_FILTERS = new URLSearchParams();
+
+export function ShopView({
+  category,
+  brandSlug,
+  search = false,
+  params = NO_FILTERS,
+}: ShopPageProps & { params?: URLSearchParams }) {
   const { products: catalogue, getBrand } = useCatalogue();
   const { openCart } = useCartDrawer();
   const brand = brandSlug ? getBrand(brandSlug) : undefined;
-  const shop = useShopFilters({ category, brand: brand?.name });
+  const shop = useShopFilters({ category, brand: brand?.name }, params);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const { filters } = shop;
 
@@ -281,6 +298,8 @@ export default function ShopPage({ category, brandSlug, search = false }: ShopPa
 
           {visible.length ? (
             <>
+              {/* Product names are h3: this keeps the outline h1 → h2 → h3 for screen readers. */}
+              <h2 className="srOnly">Products</h2>
               <ProductGrid maxColumns={3}>
                 {visible.map((product, index) => (
                   <ProductGridItem key={product.id}>

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ShopPage from "../../../../features/products/ShopPage";
+import ShopPage, { ShopView } from "../../../../features/products/ShopPage";
 import { CATEGORIES } from "../../../../features/products/shopLogic";
 
 const TITLES: Record<string, string> = {
@@ -28,7 +28,7 @@ export default async function Page({ params }: PageProps<"/shop/[category]">) {
   const { category } = await params;
   if (!CATEGORIES.includes(category)) notFound();
   return (
-    <Suspense>
+    <Suspense fallback={<ShopView category={category} />}>
       <ShopPage category={category} />
     </Suspense>
   );

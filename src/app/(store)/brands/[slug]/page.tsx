@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ShopPage from "../../../../features/products/ShopPage";
+import ShopPage, { ShopView } from "../../../../features/products/ShopPage";
 import { getCatalogue } from "../../../../server/catalogue";
 
 export const dynamicParams = false;
@@ -27,7 +27,7 @@ export default async function Page({ params }: PageProps<"/brands/[slug]">) {
   const { slug } = await params;
   if (!(await getCatalogue()).getBrand(slug)) notFound();
   return (
-    <Suspense>
+    <Suspense fallback={<ShopView brandSlug={slug} />}>
       <ShopPage brandSlug={slug} />
     </Suspense>
   );

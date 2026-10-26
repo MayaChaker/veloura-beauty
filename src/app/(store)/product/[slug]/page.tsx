@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ProductPage from "../../../../features/products/ProductPage";
+import ProductPage, { ProductView } from "../../../../features/products/ProductPage";
 import { getCatalogue } from "../../../../server/catalogue";
 
 // Every product page is pre-rendered at build time; unknown slugs 404.
@@ -34,7 +34,7 @@ export default async function Page({ params }: PageProps<"/product/[slug]">) {
   const { slug } = await params;
   if (!(await getCatalogue()).getBySlug(slug)) notFound();
   return (
-    <Suspense>
+    <Suspense fallback={<ProductView slug={slug} />}>
       <ProductPage slug={slug} />
     </Suspense>
   );
