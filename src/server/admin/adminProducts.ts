@@ -120,5 +120,3 @@ export async function getAdminProduct(id: number) {
   if (!product) return null;
   return { ...product, soldLast30Days: sold._sum.quantity ?? 0 };
 }
-
-export type AdminProduct = NonNullable<Awaited<ReturnType<typeof getAdminProduct>>>;
